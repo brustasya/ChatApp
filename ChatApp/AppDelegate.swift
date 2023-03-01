@@ -12,7 +12,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     var state = "Not Running"
-    let logger: LoggerLogic = Logger()
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         Logger.shared.printLog(log: "Application moved from \(state) to Inactive: \(#function)")
@@ -54,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_ application: UIApplication) {
         Logger.shared.printLog(log: "Application moved from \(state) to Not Running: \(#function)")
-        state = "Suspended"
+        state = "Not Running"
     }
 }
 

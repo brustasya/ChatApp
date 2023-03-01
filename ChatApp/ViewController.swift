@@ -12,6 +12,33 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        setupProfileButton()
+        
+        Logger.shared.printLog(log: "Called method: \(#function)")
+    }
+    
+    private func setupProfileButton() {
+        let profileButton = UIButton()
+        profileButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(profileButton)
+        
+        NSLayoutConstraint.activate([
+            profileButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            profileButton.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        profileButton.setTitle("Оpen Profile", for: .normal)
+        profileButton.setTitleColor(.systemBlue, for: .normal)
+        
+        profileButton.addTarget(
+            self,
+            action: #selector(tapButton),
+            for: .touchUpInside
+        )
+    }
+    
+    @objc private func tapButton() {
+        present(ProfileViewController(), animated: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {

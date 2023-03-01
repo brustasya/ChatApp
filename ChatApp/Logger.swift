@@ -13,7 +13,7 @@ protocol LoggerLogic {
 
 class Logger : LoggerLogic {
     static let shared = Logger()
-
+    
     func printLog(log : String) {
         #if DEBUG
             print(log)
