@@ -41,7 +41,10 @@ class ProfileViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        gradient.colors = [UIColor(rgb: "#F19FB4")?.cgColor ?? UIColor.lightGray.cgColor, UIColor(rgb: "EE7B95")?.cgColor ?? UIColor.gray.cgColor]
+        gradient.colors = [
+            UIColor(rgb: "#F19FB4")?.cgColor ?? UIColor.lightGray.cgColor,
+            UIColor(rgb: "EE7B95")?.cgColor ?? UIColor.gray.cgColor
+        ]
         gradient.startPoint = CGPoint(x: 0.5, y: 0.25)
         gradient.endPoint = CGPoint(x: 0.5, y: 0.75)
         profileImageView.layer.addSublayer(gradient)
@@ -54,6 +57,14 @@ class ProfileViewController: UIViewController {
         
         // После установки кнопки на экране, frame меняется
         print(addPhotoButton.frame)
+    }
+    
+    func configure(whith profileModel: UserProfileViewModel) {
+        nameLabel.text = profileModel.userName
+        descriptionLabel.text = profileModel.userDescription ?? ""
+        if profileModel.userAvatar != nil {
+            profileImageView.image = profileModel.userAvatar
+        }
     }
     
     private func setupView() {
@@ -126,7 +137,6 @@ class ProfileViewController: UIViewController {
     }
     
     private func setupImageView() {
-        
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
         
@@ -197,7 +207,11 @@ class ProfileViewController: UIViewController {
                     
                 case .restricted, .denied:
                     // Доступ к камере запрещен
-                    let alertController = UIAlertController(title: "Доступ к камере запрещен", message: "Разрешите доступ к камере в настройках приложения", preferredStyle: .alert)
+                    let alertController = UIAlertController(
+                        title: "Доступ к камере запрещен",
+                        message: "Разрешите доступ к камере в настройках приложения",
+                        preferredStyle: .alert
+                    )
                     
                     let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
                     
@@ -223,8 +237,8 @@ class ProfileViewController: UIViewController {
     
     @objc private func addPhoto() {
         pickerController.delegate = self
-        self.pickerController.allowsEditing = true
-        self.pickerController.mediaTypes = ["public.image"]
+        pickerController.allowsEditing = true
+        pickerController.mediaTypes = ["public.image"]
         
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
@@ -250,7 +264,7 @@ class ProfileViewController: UIViewController {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         
-        nameLabel.text = "Stephen Johnson"
+        //nameLabel.text = "Stephen Johnson"
         nameLabel.numberOfLines = 2
         nameLabel.textColor = .black
         nameLabel.textAlignment = .center
@@ -267,7 +281,7 @@ class ProfileViewController: UIViewController {
     private func setupDescriptionLabel() {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(descriptionLabel)
-        descriptionLabel.text = "UX/UI designer, web designer\nMoscow, Russia"
+        //descriptionLabel.text = "UX/UI designer, web designer\nMoscow, RussiaUX"
         
         descriptionLabel.textColor = .systemGray
         descriptionLabel.textAlignment = .center

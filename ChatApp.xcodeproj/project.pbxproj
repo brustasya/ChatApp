@@ -8,19 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		85A1E7C629A687BA004AD1F4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7C529A687BA004AD1F4 /* AppDelegate.swift */; };
-		85A1E7CA29A687BA004AD1F4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7C929A687BA004AD1F4 /* ViewController.swift */; };
+		85A1E7CA29A687BA004AD1F4 /* ConversationsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7C929A687BA004AD1F4 /* ConversationsListViewController.swift */; };
 		85A1E7CF29A687BD004AD1F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 85A1E7CE29A687BD004AD1F4 /* Assets.xcassets */; };
 		85A1E7D229A687BD004AD1F4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85A1E7D029A687BD004AD1F4 /* LaunchScreen.storyboard */; };
 		85A1E7DA29A68B0A004AD1F4 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7D929A68B0A004AD1F4 /* Logger.swift */; };
 		85A1E7EA29AF6BB1004AD1F4 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7E929AF6BB1004AD1F4 /* ProfileViewController.swift */; };
 		85A1E7EC29AF6BF0004AD1F4 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7EB29AF6BF0004AD1F4 /* UIColor.swift */; };
 		85A1E7EE29AF6C1B004AD1F4 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7ED29AF6C1B004AD1F4 /* UIFont.swift */; };
+		85A1E7F029B5DFCF004AD1F4 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7EF29B5DFCF004AD1F4 /* ConversationViewController.swift */; };
+		85A1E7F229B5E028004AD1F4 /* ConversationCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F129B5E028004AD1F4 /* ConversationCellModel.swift */; };
+		85A1E7F429B5E0CA004AD1F4 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F329B5E0CA004AD1F4 /* ConversationCell.swift */; };
+		85A1E7F629B88B3C004AD1F4 /* UserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F529B88B3C004AD1F4 /* UserProfileViewModel.swift */; };
+		85A1E7F829B8A148004AD1F4 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F729B8A148004AD1F4 /* MessageTableViewCell.swift */; };
+		85A1E7FA29B8A233004AD1F4 /* MessageCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F929B8A233004AD1F4 /* MessageCellModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		85A1E7C229A687BA004AD1F4 /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85A1E7C529A687BA004AD1F4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		85A1E7C929A687BA004AD1F4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		85A1E7C929A687BA004AD1F4 /* ConversationsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListViewController.swift; sourceTree = "<group>"; };
 		85A1E7CE29A687BD004AD1F4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		85A1E7D129A687BD004AD1F4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		85A1E7D329A687BD004AD1F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -28,6 +34,12 @@
 		85A1E7E929AF6BB1004AD1F4 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		85A1E7EB29AF6BF0004AD1F4 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		85A1E7ED29AF6C1B004AD1F4 /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
+		85A1E7EF29B5DFCF004AD1F4 /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
+		85A1E7F129B5E028004AD1F4 /* ConversationCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCellModel.swift; sourceTree = "<group>"; };
+		85A1E7F329B5E0CA004AD1F4 /* ConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCell.swift; sourceTree = "<group>"; };
+		85A1E7F529B88B3C004AD1F4 /* UserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewModel.swift; sourceTree = "<group>"; };
+		85A1E7F729B8A148004AD1F4 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
+		85A1E7F929B8A233004AD1F4 /* MessageCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCellModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,17 +72,55 @@
 		85A1E7C429A687BA004AD1F4 /* ChatApp */ = {
 			isa = PBXGroup;
 			children = (
+				85A1E7FE29B8E8BA004AD1F4 /* Helpers */,
+				85A1E7FD29B8E8AE004AD1F4 /* Models */,
+				85A1E7FC29B8E885004AD1F4 /* Views */,
+				85A1E7FB29B8E877004AD1F4 /* Controllers */,
 				85A1E7C529A687BA004AD1F4 /* AppDelegate.swift */,
-				85A1E7C929A687BA004AD1F4 /* ViewController.swift */,
 				85A1E7CE29A687BD004AD1F4 /* Assets.xcassets */,
 				85A1E7D029A687BD004AD1F4 /* LaunchScreen.storyboard */,
 				85A1E7D329A687BD004AD1F4 /* Info.plist */,
-				85A1E7D929A68B0A004AD1F4 /* Logger.swift */,
-				85A1E7E929AF6BB1004AD1F4 /* ProfileViewController.swift */,
-				85A1E7EB29AF6BF0004AD1F4 /* UIColor.swift */,
-				85A1E7ED29AF6C1B004AD1F4 /* UIFont.swift */,
 			);
 			path = ChatApp;
+			sourceTree = "<group>";
+		};
+		85A1E7FB29B8E877004AD1F4 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				85A1E7EF29B5DFCF004AD1F4 /* ConversationViewController.swift */,
+				85A1E7E929AF6BB1004AD1F4 /* ProfileViewController.swift */,
+				85A1E7C929A687BA004AD1F4 /* ConversationsListViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		85A1E7FC29B8E885004AD1F4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				85A1E7F329B5E0CA004AD1F4 /* ConversationCell.swift */,
+				85A1E7F729B8A148004AD1F4 /* MessageTableViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		85A1E7FD29B8E8AE004AD1F4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				85A1E7F929B8A233004AD1F4 /* MessageCellModel.swift */,
+				85A1E7F129B5E028004AD1F4 /* ConversationCellModel.swift */,
+				85A1E7F529B88B3C004AD1F4 /* UserProfileViewModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		85A1E7FE29B8E8BA004AD1F4 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				85A1E7ED29AF6C1B004AD1F4 /* UIFont.swift */,
+				85A1E7EB29AF6BF0004AD1F4 /* UIColor.swift */,
+				85A1E7D929A68B0A004AD1F4 /* Logger.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,12 +193,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85A1E7CA29A687BA004AD1F4 /* ViewController.swift in Sources */,
+				85A1E7F029B5DFCF004AD1F4 /* ConversationViewController.swift in Sources */,
+				85A1E7CA29A687BA004AD1F4 /* ConversationsListViewController.swift in Sources */,
+				85A1E7F229B5E028004AD1F4 /* ConversationCellModel.swift in Sources */,
+				85A1E7FA29B8A233004AD1F4 /* MessageCellModel.swift in Sources */,
 				85A1E7DA29A68B0A004AD1F4 /* Logger.swift in Sources */,
+				85A1E7F829B8A148004AD1F4 /* MessageTableViewCell.swift in Sources */,
 				85A1E7EE29AF6C1B004AD1F4 /* UIFont.swift in Sources */,
 				85A1E7EA29AF6BB1004AD1F4 /* ProfileViewController.swift in Sources */,
 				85A1E7C629A687BA004AD1F4 /* AppDelegate.swift in Sources */,
+				85A1E7F629B88B3C004AD1F4 /* UserProfileViewModel.swift in Sources */,
 				85A1E7EC29AF6BF0004AD1F4 /* UIColor.swift in Sources */,
+				85A1E7F429B5E0CA004AD1F4 /* ConversationCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
