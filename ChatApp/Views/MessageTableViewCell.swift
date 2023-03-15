@@ -18,6 +18,7 @@ final class MessageTableViewCell : UITableViewCell, ConfigurableViewProtocol {
     private var incomingSecondConstraint : NSLayoutConstraint?
     private var outgoingFirstConstraint : NSLayoutConstraint?
     private var outgoingSecondConstraint : NSLayoutConstraint?
+    private lazy var theme = Theme.light
     
     private lazy var messageLabel : UILabel = {
         let label = UILabel()
@@ -42,6 +43,10 @@ final class MessageTableViewCell : UITableViewCell, ConfigurableViewProtocol {
         return label
     }()
     
+    func configureTheme(with theme: Theme) {
+        self.theme = theme
+    }
+    
     func configure(with model: MessageCellModel) {
         messageLabel.text = model.text
         
@@ -52,20 +57,22 @@ final class MessageTableViewCell : UITableViewCell, ConfigurableViewProtocol {
         isIncoming = model.isIncoming
         
         if (isIncoming) {
-            messageLabel.textColor = .black
-            messageImageView.tintColor = UIColor(rgb: "#E9E9EB")
-            dateLabel.textColor = .systemGray
+            messageLabel.textColor = theme == Theme.dark ? .white : .black
+            messageImageView.tintColor = theme == Theme.dark ? UIColor(rgb: "#262628") : UIColor(rgb: "#E9E9EB")
+            dateLabel.textColor = theme == Theme.dark ? .systemGray2 : .systemGray
         } else {
             messageLabel.textColor = .white
             messageImageView.tintColor = UIColor(rgb: "#448AF7")
             dateLabel.textColor = .systemGray3
         }
         
-        guard let image = UIImage(named: isIncoming ? "received" : "sent") else { return }
+        guard let image = UIImage(named: isIncoming ? theme == Theme.dark ? "darkReceived" : "received" : "sent") else { return }
         messageImageView.image = image.resizableImage(
             withCapInsets: UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20),
             resizingMode: .stretch
         ).withRenderingMode(.alwaysTemplate)
+        
+        contentView.backgroundColor = theme == Theme.dark ? .black : .white
         
         setupMessagesConstraints()
     }

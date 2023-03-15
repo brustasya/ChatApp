@@ -21,6 +21,7 @@
 		85A1E7F629B88B3C004AD1F4 /* UserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F529B88B3C004AD1F4 /* UserProfileViewModel.swift */; };
 		85A1E7F829B8A148004AD1F4 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F729B8A148004AD1F4 /* MessageTableViewCell.swift */; };
 		85A1E7FA29B8A233004AD1F4 /* MessageCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F929B8A233004AD1F4 /* MessageCellModel.swift */; };
+		85A1E80029BF1CF2004AD1F4 /* ThemesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7FF29BF1CF2004AD1F4 /* ThemesViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		85A1E7F529B88B3C004AD1F4 /* UserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewModel.swift; sourceTree = "<group>"; };
 		85A1E7F729B8A148004AD1F4 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		85A1E7F929B8A233004AD1F4 /* MessageCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCellModel.swift; sourceTree = "<group>"; };
+		85A1E7FF29BF1CF2004AD1F4 /* ThemesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemesViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 				85A1E7EF29B5DFCF004AD1F4 /* ConversationViewController.swift */,
 				85A1E7E929AF6BB1004AD1F4 /* ProfileViewController.swift */,
 				85A1E7C929A687BA004AD1F4 /* ConversationsListViewController.swift */,
+				85A1E7FF29BF1CF2004AD1F4 /* ThemesViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -196,6 +199,7 @@
 				85A1E7F029B5DFCF004AD1F4 /* ConversationViewController.swift in Sources */,
 				85A1E7CA29A687BA004AD1F4 /* ConversationsListViewController.swift in Sources */,
 				85A1E7F229B5E028004AD1F4 /* ConversationCellModel.swift in Sources */,
+				85A1E80029BF1CF2004AD1F4 /* ThemesViewController.swift in Sources */,
 				85A1E7FA29B8A233004AD1F4 /* MessageCellModel.swift in Sources */,
 				85A1E7DA29A68B0A004AD1F4 /* Logger.swift in Sources */,
 				85A1E7F829B8A148004AD1F4 /* MessageTableViewCell.swift in Sources */,

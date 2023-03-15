@@ -7,8 +7,6 @@
 
 import UIKit
 
-
-
 enum DaySection: Hashable {
     case yesturday
     case today
@@ -18,8 +16,26 @@ class ConversationsViewController: UIViewController {
     private let tableView = UITableView()
     private lazy var dataSource = makeDataSource()
     private lazy var toolbar = UIView()
-    var toolbarBottomConstraint: NSLayoutConstraint = NSLayoutConstraint()
-    //var tableViewBottomConstraint: NSLayoutConstraint = NSLayoutConstraint()
+    private lazy var nameLabel = UILabel()
+    private var toolbarBottomConstraint: NSLayoutConstraint = NSLayoutConstraint()
+    private lazy var messageInputTextView = UITextView()
+    private lazy var theme = Theme.light
+    
+    private let lightTheme = [
+        "backgroundColor": UIColor.white,
+        "tableViewBackgroundColor": UIColor.white,
+        "textColor": UIColor.black,
+        "navbarBackgroundColor": #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1),
+        "borderColor": UIColor.gray
+    ]
+
+    private let darkTheme = [
+        "backgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
+        "tableViewBackgroundColor": UIColor.black,
+        "textColor": UIColor.white,
+        "navbarBackgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
+        "borderColor": UIColor.black
+    ]
     
     let messageCellModelsToday = [
         MessageCellModel(text: "Hellow!", date: Date(), isIncoming: true),
@@ -34,10 +50,15 @@ class ConversationsViewController: UIViewController {
     ]
     
     private lazy var customNavigationBar: UINavigationBar = {
-        let customNavigationBar = UINavigationBar(frame: CGRect(x: -1, y: 0, width: view.frame.width + 1, height: 137))
+        let customNavigationBar = UINavigationBar(
+            frame: CGRect(
+                x: -1,
+                y: 0,
+                width: view.frame.width + 1,
+                height: 137
+            )
+        )
 
-        customNavigationBar.backgroundColor = UIColor(rgb: "#E9E9EB")
-        customNavigationBar.layer.borderColor = UIColor.gray.cgColor
         customNavigationBar.layer.borderWidth = 0.5
         
         return customNavigationBar
@@ -45,13 +66,23 @@ class ConversationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
         
-        toolbar.backgroundColor = .white
+        setupToolBar()
+        setupNavBar()
+        setupTableView()
+        applySnapshot(animatingDifferences: false)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        setupNavBar()
+    }
+    
+    private func setupToolBar() {
         toolbar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(toolbar)
         
-        let messageInputTextView = UITextView()
         messageInputTextView.layer.cornerRadius = 20
         messageInputTextView.layer.masksToBounds = true
         messageInputTextView.layer.borderWidth = 1.0
@@ -64,12 +95,7 @@ class ConversationsViewController: UIViewController {
         let imageConfiguration = UIImage.SymbolConfiguration(scale: .large)
         sendButton.setImage(UIImage(systemName: "arrow.up.circle.fill", withConfiguration: imageConfiguration), for: .normal)
         sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
-        
         sendButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        setupNavBar()
-        setupTableView()
-        applySnapshot(animatingDifferences: false)
         
         toolbarBottomConstraint = toolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25)
         toolbarBottomConstraint.isActive = true
@@ -94,13 +120,11 @@ class ConversationsViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             toolbarBottomConstraint.constant = -keyboardSize.height
-            //tableViewBottomConstraint.constant = -keyboardSize.height
             UIView.animate(withDuration: 0.3) {
                 self.view.layoutIfNeeded()
             }
@@ -110,7 +134,6 @@ class ConversationsViewController: UIViewController {
     @objc func keyboardWillHide(notification: Notification) {
         UIView.animate(withDuration: 0.3) {
             self.toolbarBottomConstraint.constant = 0
-            //self.tableViewBottomConstraint.constant = 0
             self.view.layoutIfNeeded()
         }
     }
@@ -136,9 +159,7 @@ class ConversationsViewController: UIViewController {
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(avatarImageView)
         
-        let nameLabel = UILabel()
         nameLabel.text = "Jane"
-        nameLabel.textColor = .black
         nameLabel.font = .systemFont(ofSize: 11)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
@@ -174,12 +195,10 @@ class ConversationsViewController: UIViewController {
         tableView.separatorColor = .clear
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
-        //tableViewBottomConstraint = tableView.bottomAnchor.constraint(equalTo: toolbar.topAnchor)
-        //tableViewBottomConstraint.isActive = true
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: customNavigationBar.bottomAnchor),
             tableView.bottomAnchor.constraint(equalTo: toolbar.topAnchor),
-            //view.bottomAnchor.constraint(equalTo: tableView.bottomAnchor),
+            
             view.leadingAnchor.constraint(equalTo: tableView.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor)
         ])
@@ -190,6 +209,7 @@ class ConversationsViewController: UIViewController {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageTableViewCell.reuseIdentifier, for: indexPath) as? MessageTableViewCell else {
                 fatalError("Cannot create MessageCell")
             }
+            cell.configureTheme(with: self.theme)
             cell.configure(with: model)
             return cell
         }
@@ -205,6 +225,25 @@ class ConversationsViewController: UIViewController {
         
         dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
+    
+    private func changeTheme(_ theme: [String: UIColor]) {
+        tableView.backgroundColor = theme["tableViewBackgroundColor"]
+        toolbar.backgroundColor = theme["backgroundColor"]
+        messageInputTextView.backgroundColor = theme["backgroundColor"]
+        customNavigationBar.backgroundColor = theme["navbarBackgroundColor"]
+        customNavigationBar.layer.borderColor = theme["borderColor"]?.cgColor
+        nameLabel.textColor = theme["textColor"]
+    }
+    
+    func configure(with theme: Theme) {
+        self.theme = theme
+        if theme == Theme.dark {
+            changeTheme(darkTheme)
+        } else {
+            changeTheme(lightTheme)
+        }
+    }
+    
 }
 
 
@@ -223,6 +262,8 @@ final class DataSourceForConversation: UITableViewDiffableDataSource<DaySection,
         }
     }
 }
+
+
 
 // MARK: - UITableViewDelegate
 

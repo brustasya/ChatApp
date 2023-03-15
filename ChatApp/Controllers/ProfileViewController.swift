@@ -21,6 +21,18 @@ class ProfileViewController: UIViewController {
     let pickerController = UIImagePickerController()
     let gradient = CAGradientLayer()
     
+    private let lightTheme = [
+        "backgroundColor": UIColor.white,
+        "textColor": UIColor.black,
+        "secondaryTextColor": UIColor.systemGray
+    ]
+
+    private let darkTheme = [
+        "backgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
+        "textColor": UIColor.white,
+        "secondaryTextColor": UIColor.systemGray5
+    ]
+    
     init() {
         super.init(nibName: nil, bundle: nil)
         
@@ -79,12 +91,26 @@ class ProfileViewController: UIViewController {
         setupDescriptionLabel()
     }
     
+    private func changeTheme(_ theme: [String: UIColor]) {
+        view.backgroundColor = theme["backgroundColor"]
+        titleLabel.textColor = theme["textColor"]
+        nameLabel.textColor = theme["textColor"]
+        descriptionLabel.textColor = theme["secondaryTextColor"]
+    }
+    
+    func configureTheme(with theme: Theme) {
+        if theme == Theme.dark {
+            changeTheme(darkTheme)
+        } else {
+            changeTheme(lightTheme)
+        }
+    }
+    
     private func setupTitle() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(titleLabel)
         
         titleLabel.text = "My Profile"
-        titleLabel.textColor = .black
         titleLabel.textAlignment = .center
         titleLabel.font = .systemFont(ofSize: 17.0, weight: .semibold)
         
@@ -264,9 +290,7 @@ class ProfileViewController: UIViewController {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         
-        //nameLabel.text = "Stephen Johnson"
         nameLabel.numberOfLines = 2
-        nameLabel.textColor = .black
         nameLabel.textAlignment = .center
         nameLabel.font = .systemFont(ofSize: 22.0, weight: .bold)
         
@@ -281,9 +305,7 @@ class ProfileViewController: UIViewController {
     private func setupDescriptionLabel() {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(descriptionLabel)
-        //descriptionLabel.text = "UX/UI designer, web designer\nMoscow, RussiaUX"
         
-        descriptionLabel.textColor = .systemGray
         descriptionLabel.textAlignment = .center
         descriptionLabel.font = .systemFont(ofSize: 17, weight: .regular)
         

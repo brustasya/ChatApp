@@ -21,6 +21,20 @@ class ConversationsListViewController: UIViewController {
     private lazy var onlineConversations: [ConversationCellModel] = []
     private lazy var offlineConversations: [ConversationCellModel] = []
     
+    private lazy var theme = Theme.light
+    
+    private let lightTheme = [
+        "backgroundColor": UIColor.white,
+        "textColor": UIColor.black,
+        "secondaryTextColor": UIColor.systemGray
+    ]
+
+    private let darkTheme = [
+        "backgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
+        "textColor": UIColor.white,
+        "secondaryTextColor": UIColor.systemGray5
+    ]
+    
     let conversationCellModels = [
         ConversationCellModel(name: "John1", message: nil, date: nil, isOnline: true, hasUnreadMessages: false),
         ConversationCellModel(name: "Mike1", message: "How are you?", date: Date(timeIntervalSinceNow: -169400), isOnline: false, hasUnreadMessages: false),
@@ -51,6 +65,18 @@ class ConversationsListViewController: UIViewController {
         setupTableView()
         applySnapshot(animatingDifferences: false)
         
+        if let themeRawValue = UserDefaults.standard.string(forKey: "theme"),
+           let savedTheme = Theme(rawValue: themeRawValue) {
+            self.theme = savedTheme
+        }
+        
+        if theme == Theme.dark {
+            changeTheme(darkTheme)
+        }
+        else {
+            changeTheme(lightTheme)
+        }
+        
         Logger.shared.printLog(log: "Called method: \(#function)")
     }
     
@@ -68,6 +94,7 @@ class ConversationsListViewController: UIViewController {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier, for: indexPath) as? ConversationCell else {
                 fatalError("Cannot create ConversationCell")
             }
+            cell.configureTheme(with: self.theme)
             cell.configure(with: cellModel)
             cell.separatorConfigure(with: indexPath.row != tableView.numberOfRows(inSection: indexPath.section) - 1)
             return cell
@@ -91,6 +118,7 @@ class ConversationsListViewController: UIViewController {
     private func setupNavbar() {
         let imageConfiguration = UIImage.SymbolConfiguration(scale: .medium)
         let settingsImage = UIImage(systemName: "gear", withConfiguration: imageConfiguration)
+        
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: settingsImage,
             style: .plain,
@@ -115,12 +143,53 @@ class ConversationsListViewController: UIViewController {
     
     @objc private func openProfile() {
         let profileController = ProfileViewController()
-        profileController.configure(whith: UserProfileViewModel(userName: "Stephen Johnson", userDescription: "UX/UI designer, web designer\nMoscow, RussiaUX", userAvatar: nil))
+        profileController.configure(whith: UserProfileViewModel(
+            userName: "Stephen Johnson",
+            userDescription: "UX/UI designer, web designer\nMoscow, RussiaUX",
+            userAvatar: nil
+        ))
+        profileController.configureTheme(with: theme)
         present(profileController, animated: true)
     }
     
     @objc private func openSettings() {
-        print("settingsButton tap")
+        let themesViewController = ThemesViewController()
+        
+        themesViewController.delegate = self
+        
+        // retain cycle потенциально может возникнуть из-за того, что self захвачен в замыкании themeChangedHandler
+        // и может сохраняться внутри themesViewController. Чтобы избежать возникновения retain cycle,
+        // нужно захватывать self слабой ссылкой с помощью [weak self].
+        themesViewController.themeChangedHandler = { [weak self] theme in
+            self?.theme = theme
+            
+            if theme == Theme.dark {
+                self?.changeTheme(self?.darkTheme ?? [:])
+            }
+            else {
+                self?.changeTheme(self?.lightTheme ?? [:])
+            }
+            
+            self?.tableView.reloadData()
+        }
+        
+        themesViewController.configure(with: theme)
+        self.navigationController?.pushViewController(themesViewController, animated: true)
+    }
+    
+    private func changeTheme(_ theme: [String: UIColor]) {
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: theme["textColor"] ?? UIColor.black
+        ]
+        
+        self.navigationController?.navigationBar.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: theme["textColor"] ?? UIColor.black
+        ]
+        tableView.backgroundColor = theme["backgroundColor"]
+        
+        UILabel.appearance(whenContainedInInstancesOf: [
+            UITableViewHeaderFooterView.self
+        ]).textColor = theme["secondaryTextColor"]
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -167,6 +236,7 @@ class ConversationsListViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        UserDefaults.standard.setValue(theme.rawValue, forKey: "theme")
         
         Logger.shared.printLog(log: "Called method: \(#function)")
     }
@@ -204,13 +274,37 @@ extension ConversationsListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.navigationController?.pushViewController(ConversationsViewController(), animated: true)
+        let conversationsViewController = ConversationsViewController()
+        conversationsViewController.configure(with: theme)
+        self.navigationController?.pushViewController(conversationsViewController, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 76
     }
-    
+}
+
+
+// MARK: - ThemesPickerDelegate
+
+protocol ThemesPickerDelegate: AnyObject {
+    func themesPicker(didSelectTheme theme: Theme)
+}
+
+// пример использования делегата
+extension ConversationsListViewController: ThemesPickerDelegate {
+    func themesPicker(didSelectTheme theme: Theme) {
+        self.theme = theme
+        
+        if theme == Theme.dark {
+            changeTheme(darkTheme)
+        }
+        else {
+            changeTheme(lightTheme)
+        }
+        
+        tableView.reloadData()
+    }
 }
 

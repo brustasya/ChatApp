@@ -24,6 +24,7 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
     private lazy var hasUnreadMessages = false
     private lazy var avatarImageView = UIImageView()
     private lazy var separatorLine = UIView()
+    private lazy var theme = Theme.light
     let whiteCircleImageView = UIImageView()
     let greenCircleImageView = UIImageView()
     
@@ -89,14 +90,14 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         avatarImageView.backgroundColor = .gray
         
         nameLabel.font = UIFont.boldSystemFont(ofSize: 17)
-        nameLabel.textColor = .black
+        //nameLabel.textColor = .black
         
         messageLabel.numberOfLines = 2
         
         dateLabel.font = UIFont.systemFont(ofSize: 15)
-        dateLabel.textColor = .gray
+        //dateLabel.textColor = .gray
         
-        disclosureImageView.tintColor = .lightGray
+        //disclosureImageView.tintColor = .lightGray
         setupGreenCircle()
     }
     
@@ -138,15 +139,15 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         
         if hasUnreadMessages == true {
             messageLabel.font = UIFont.boldSystemFont(ofSize: 15)
-            messageLabel.textColor = .black
+            messageLabel.textColor = theme == Theme.dark ? .white : .black
         } else {
             messageLabel.font = UIFont.systemFont(ofSize: 15)
-            messageLabel.textColor = .gray
+            messageLabel.textColor = theme == Theme.dark ? .systemGray5 : .gray
         }
         
         if messageLabel.text == "No messages yet" {
             messageLabel.font = .systemFont(ofSize: 15, weight: .semibold)
-            messageLabel.textColor = .gray
+            messageLabel.textColor = theme == Theme.dark ? .systemGray5 : .gray
             disclosureImageView.isHidden = true
         }
         else {
@@ -187,6 +188,14 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         else {
             separatorLine.isHidden = true
         }
+    }
+    
+    func configureTheme(with theme: Theme) {
+        self.theme = theme
+        contentView.backgroundColor = theme == Theme.dark ? #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1) : .white
+        nameLabel.textColor = theme == Theme.dark ? .white : .black
+        dateLabel.textColor = theme == Theme.dark ? .systemGray5 : .gray
+        disclosureImageView.tintColor = theme == Theme.dark ? .systemGray5 : .lightGray
     }
     
 }
