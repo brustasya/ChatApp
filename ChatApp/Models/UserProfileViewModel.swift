@@ -8,7 +8,7 @@
 import UIKit
 
 struct UserProfileViewModel {
-    let userName: String
+    let userName: String?
     let userDescription: String?
     let userAvatar: UIImage?
 }

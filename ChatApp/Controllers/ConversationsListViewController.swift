@@ -65,16 +65,30 @@ class ConversationsListViewController: UIViewController {
         setupTableView()
         applySnapshot(animatingDifferences: false)
         
-        if let themeRawValue = UserDefaults.standard.string(forKey: "theme"),
+        /*if let themeRawValue = UserDefaults.standard.string(forKey: "theme"),
            let savedTheme = Theme(rawValue: themeRawValue) {
             self.theme = savedTheme
+        }*/
+        
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
         }
         
-        if theme == Theme.dark {
-            changeTheme(darkTheme)
-        }
-        else {
-            changeTheme(lightTheme)
+        let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
+        
+        profileSaver.loadTheme { [weak self] theme in
+            if let theme = theme {
+                self?.theme = theme
+                if theme == Theme.dark {
+                    self?.changeTheme(self?.darkTheme ?? [:])
+                    self?.tableView.reloadData()
+                }
+                else {
+                    self?.changeTheme(self?.lightTheme ?? [:])
+                }
+            } else {
+                self?.changeTheme(self?.lightTheme ?? [:])
+            }
         }
         
         Logger.shared.printLog(log: "Called method: \(#function)")
@@ -143,11 +157,34 @@ class ConversationsListViewController: UIViewController {
     
     @objc private func openProfile() {
         let profileController = ProfileViewController()
-        profileController.configure(whith: UserProfileViewModel(
-            userName: "Stephen Johnson",
-            userDescription: "UX/UI designer, web designer\nMoscow, RussiaUX",
-            userAvatar: nil
-        ))
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        
+        let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
+        
+        var userName: String?
+        var userDectription: String?
+        var userAvatar: UIImage?
+        
+        profileSaver.loadUserName { name in
+            userName = name
+            
+            profileSaver.loadDescription { description in
+                userDectription = description
+                
+                profileSaver.loadImage { image in
+                    userAvatar = image
+
+                    profileController.configure(with: UserProfileViewModel(
+                        userName: userName,
+                        userDescription: userDectription,
+                        userAvatar: userAvatar
+                    ))
+                }
+            }
+        }
+        
         profileController.configureTheme(with: theme)
         present(profileController, animated: true)
     }
@@ -162,7 +199,7 @@ class ConversationsListViewController: UIViewController {
         // нужно захватывать self слабой ссылкой с помощью [weak self].
         themesViewController.themeChangedHandler = { [weak self] theme in
             self?.theme = theme
-            
+
             if theme == Theme.dark {
                 self?.changeTheme(self?.darkTheme ?? [:])
             }
@@ -178,6 +215,8 @@ class ConversationsListViewController: UIViewController {
     }
     
     private func changeTheme(_ theme: [String: UIColor]) {
+        //UserDefaults.standard.setValue(self.theme.rawValue, forKey: "theme")
+        
         self.navigationController?.navigationBar.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: theme["textColor"] ?? UIColor.black
         ]
@@ -190,6 +229,19 @@ class ConversationsListViewController: UIViewController {
         UILabel.appearance(whenContainedInInstancesOf: [
             UITableViewHeaderFooterView.self
         ]).textColor = theme["secondaryTextColor"]
+        
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+
+        let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
+        profileSaver.saveTheme(self.theme) { success in
+            if success {
+                print("Theme saved successfully")
+            } else {
+                print("Failed to save theme")
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -236,7 +288,6 @@ class ConversationsListViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        UserDefaults.standard.setValue(theme.rawValue, forKey: "theme")
         
         Logger.shared.printLog(log: "Called method: \(#function)")
     }
@@ -246,7 +297,6 @@ class ConversationsListViewController: UIViewController {
         
         Logger.shared.printLog(log: "Called method: \(#function)")
     }
-    
 }
 
 final class DataSource: UITableViewDiffableDataSource<Section, ConversationCellModel> {
@@ -260,9 +310,6 @@ final class DataSource: UITableViewDiffableDataSource<Section, ConversationCellM
             return nil
         }
     }
-    
-    
-
 }
 
 // MARK: - UITableViewDelegate
@@ -307,4 +354,3 @@ extension ConversationsListViewController: ThemesPickerDelegate {
         tableView.reloadData()
     }
 }
-

@@ -246,7 +246,6 @@ class ConversationsViewController: UIViewController {
     
 }
 
-
 final class DataSourceForConversation: UITableViewDiffableDataSource<DaySection, MessageCellModel> {
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let dateFormatter = DateFormatter()
@@ -262,8 +261,6 @@ final class DataSourceForConversation: UITableViewDiffableDataSource<DaySection,
         }
     }
 }
-
-
 
 // MARK: - UITableViewDelegate
 

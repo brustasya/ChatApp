@@ -22,6 +22,8 @@
 		85A1E7F829B8A148004AD1F4 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F729B8A148004AD1F4 /* MessageTableViewCell.swift */; };
 		85A1E7FA29B8A233004AD1F4 /* MessageCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7F929B8A233004AD1F4 /* MessageCellModel.swift */; };
 		85A1E80029BF1CF2004AD1F4 /* ThemesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7FF29BF1CF2004AD1F4 /* ThemesViewController.swift */; };
+		85F3A8F229CA04EB00ACBB6C /* GCDProfileSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F3A8F129CA04EB00ACBB6C /* GCDProfileSaver.swift */; };
+		85F3A8F429CA6A0D00ACBB6C /* OperationProfileSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F3A8F329CA6A0D00ACBB6C /* OperationProfileSaver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +44,8 @@
 		85A1E7F729B8A148004AD1F4 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		85A1E7F929B8A233004AD1F4 /* MessageCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCellModel.swift; sourceTree = "<group>"; };
 		85A1E7FF29BF1CF2004AD1F4 /* ThemesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemesViewController.swift; sourceTree = "<group>"; };
+		85F3A8F129CA04EB00ACBB6C /* GCDProfileSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GCDProfileSaver.swift; sourceTree = "<group>"; };
+		85F3A8F329CA6A0D00ACBB6C /* OperationProfileSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationProfileSaver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +78,7 @@
 		85A1E7C429A687BA004AD1F4 /* ChatApp */ = {
 			isa = PBXGroup;
 			children = (
+				85F3A8F029CA04C900ACBB6C /* Services */,
 				85A1E7FE29B8E8BA004AD1F4 /* Helpers */,
 				85A1E7FD29B8E8AE004AD1F4 /* Models */,
 				85A1E7FC29B8E885004AD1F4 /* Views */,
@@ -124,6 +129,15 @@
 				85A1E7D929A68B0A004AD1F4 /* Logger.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		85F3A8F029CA04C900ACBB6C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				85F3A8F129CA04EB00ACBB6C /* GCDProfileSaver.swift */,
+				85F3A8F329CA6A0D00ACBB6C /* OperationProfileSaver.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -205,10 +219,12 @@
 				85A1E7F829B8A148004AD1F4 /* MessageTableViewCell.swift in Sources */,
 				85A1E7EE29AF6C1B004AD1F4 /* UIFont.swift in Sources */,
 				85A1E7EA29AF6BB1004AD1F4 /* ProfileViewController.swift in Sources */,
+				85F3A8F429CA6A0D00ACBB6C /* OperationProfileSaver.swift in Sources */,
 				85A1E7C629A687BA004AD1F4 /* AppDelegate.swift in Sources */,
 				85A1E7F629B88B3C004AD1F4 /* UserProfileViewModel.swift in Sources */,
 				85A1E7EC29AF6BF0004AD1F4 /* UIColor.swift in Sources */,
 				85A1E7F429B5E0CA004AD1F4 /* ConversationCell.swift in Sources */,
+				85F3A8F229CA04EB00ACBB6C /* GCDProfileSaver.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

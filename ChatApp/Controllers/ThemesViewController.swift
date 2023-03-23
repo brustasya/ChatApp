@@ -14,7 +14,7 @@ enum Theme : String{
 
 class ThemesViewController: UIViewController {
 
-    var delegate: ThemesPickerDelegate?
+    weak var delegate: ThemesPickerDelegate?
     var themeChangedHandler: ((Theme) -> Void)?
     
     let backgroundView = UIView()
