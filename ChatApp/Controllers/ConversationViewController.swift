@@ -205,11 +205,11 @@ class ConversationsViewController: UIViewController {
     }
     
     private func makeDataSource() -> DataSourceForConversation {
-        let dataSource = DataSourceForConversation(tableView: tableView) { tableView, indexPath, model in
+        let dataSource = DataSourceForConversation(tableView: tableView) { [weak self] tableView, indexPath, model in
             guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageTableViewCell.reuseIdentifier, for: indexPath) as? MessageTableViewCell else {
                 fatalError("Cannot create MessageCell")
             }
-            cell.configureTheme(with: self.theme)
+            cell.configureTheme(with: self?.theme ?? Theme.light)
             cell.configure(with: model)
             return cell
         }

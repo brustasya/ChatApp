@@ -42,7 +42,7 @@ class ProfileViewController: UIViewController {
     
     private lazy var isPhotoEdited = false
     private lazy var isSaving = false
-        
+    
     private var profileSaver: ProfileSaver?
     
     private let lightTheme = [
@@ -51,7 +51,7 @@ class ProfileViewController: UIViewController {
         "textColor": UIColor.black,
         "secondaryTextColor": UIColor.systemGray
     ]
-
+    
     private let darkTheme = [
         "backgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
         "editBackgroundColor": UIColor.black,
@@ -146,12 +146,12 @@ class ProfileViewController: UIViewController {
         nameEditLabel.text = "Name"
         nameEditLabel.translatesAutoresizingMaskIntoConstraints = false
         viewNameBackground.addSubview(nameEditLabel)
-
+        
         nameTextField.placeholder = "Enter your name"
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameTextField)
         nameTextField.isHidden = true
-
+        
         let bioLabel = UILabel()
         bioLabel.text = "Bio"
         bioLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -268,9 +268,9 @@ class ProfileViewController: UIViewController {
             self?.profileSaver = profileSaver
             self?.saveProfileData(profileSaver)
         }
-
+        
         let menu = UIMenu(title: "", options: .displayInline, children: [saveGCDAction, saveOperationsAction])
-
+        
         choiceConservationButton.showsMenuAsPrimaryAction = true
         choiceConservationButton.menu = menu
     }
@@ -375,17 +375,17 @@ class ProfileViewController: UIViewController {
         
         if sucsessShowAlert {
             let alertController = UIAlertController(title: "Success", message: "You are breathtaking", preferredStyle: .alert)
-
+            
             let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
                 self?.disableEditMode()
             }
-
+            
             alertController.addAction(okAction)
-
+            
             self.present(alertController, animated: true, completion: nil)
         } else {
             let alertController = UIAlertController(title: "Could not save profile", message: "Try again", preferredStyle: .alert)
-
+            
             let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
                 self?.disableEditMode()
             }
@@ -393,10 +393,10 @@ class ProfileViewController: UIViewController {
             let tryAgainAction = UIAlertAction(title: "Try Again", style: .default) { [weak self] (_) in
                 self?.saveProfileData(profileSaver)
             }
-
+            
             alertController.addAction(okAction)
             alertController.addAction(tryAgainAction)
-
+            
             self.present(alertController, animated: true, completion: nil)
         }
     }
@@ -475,7 +475,7 @@ class ProfileViewController: UIViewController {
                 
                 profileSaver.loadImage { [weak self] image in
                     userAvatar = image
-
+                    
                     self?.configure(with: UserProfileViewModel(
                         userName: userName,
                         userDescription: userDectription,
@@ -626,9 +626,9 @@ class ProfileViewController: UIViewController {
         initialsLabel.textAlignment = .center
         
         /*NSLayoutConstraint.activate([
-            initialsLabel.centerXAnchor.constraint(equalTo: profileImageView.centerXAnchor),
-            initialsLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor)
-        ])*/
+         initialsLabel.centerXAnchor.constraint(equalTo: profileImageView.centerXAnchor),
+         initialsLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor)
+         ])*/
     }
     
     private func setupAddPhotoButton() {

@@ -37,7 +37,6 @@ class GCDProfileSaver: ProfileSaver {
         queue.async {
             do {
                 try theme.rawValue.write(to: self.themeFileURL, atomically: true, encoding: .utf8)
-                print("Сохраняется \(theme.rawValue)")
                 DispatchQueue.main.async {
                     completion(true)
                 }
@@ -55,7 +54,6 @@ class GCDProfileSaver: ProfileSaver {
             do {
                 let themeString = try String(contentsOf: self.themeFileURL, encoding: .utf8)
                 if let theme = Theme(rawValue: themeString) {
-                    print("Загрузилось \(theme.rawValue)")
                     DispatchQueue.main.async {
                         completion(theme)
                     }
