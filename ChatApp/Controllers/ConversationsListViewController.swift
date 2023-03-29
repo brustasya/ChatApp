@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 enum Section {
     case online
@@ -16,10 +17,15 @@ class ConversationsListViewController: UIViewController {
     let gradient = CAGradientLayer()
     let profileImageView = UIImageView()
     
+    let button = UIButton(type: .custom)
+    
     private let tableView = UITableView()
     private lazy var dataSource = makeDataSource()
     private lazy var onlineConversations: [ConversationCellModel] = []
     private lazy var offlineConversations: [ConversationCellModel] = []
+    
+    private let userProfileDataManager = UserProfileDataManager()
+    private lazy var cancellables = Set<AnyCancellable>()
     
     private lazy var theme = Theme.light
     
@@ -140,10 +146,21 @@ class ConversationsListViewController: UIViewController {
             action: #selector(openSettings)
         )
         
-        profileImageView.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
-        profileImageView.contentMode = .scaleAspectFit
+        view.addSubview(profileImageView)
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        profileImageView.widthAnchor.constraint(equalToConstant: 32).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 32).isActive = true
         profileImageView.layer.cornerRadius = 16
         profileImageView.clipsToBounds = true
+        profileImageView.image = UIImage(named: "avatar")
+        
+        userProfileDataManager.loadUserProfile()
+            .compactMap { $0?.userAvatar ?? UIImage(named: "avatar")?.pngData() }
+            .map { UIImage(data: $0) ?? UIImage(named: "avatar") }
+            .subscribe(on: DispatchQueue.global()) // загрузка в фоновом потоке
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.image, on: profileImageView)
+            .store(in: &cancellables)
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openProfile))
         profileImageView.addGestureRecognizer(tapGestureRecognizer)
@@ -151,40 +168,50 @@ class ConversationsListViewController: UIViewController {
         let barButtonItem = UIBarButtonItem(customView: profileImageView)
         navigationItem.rightBarButtonItem = barButtonItem
         
+        
+        profileImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        
         navigationItem.title = "Chat"
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     @objc private func openProfile() {
         let profileController = ProfileViewController()
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            return
-        }
         
-        let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
+        /*guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+         return
+         }
+         
+         let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
+         
+         var userName: String?
+         var userDectription: String?
+         var userAvatar: UIImage?
+         
+         profileSaver.loadUserName { name in
+         userName = name
+         
+         profileSaver.loadDescription { description in
+         userDectription = description
+         
+         profileSaver.loadImage { image in
+         userAvatar = image
+         
+         profileController.configure(with: UserProfileViewModel(
+         userName: userName,
+         userDescription: userDectription,
+         userAvatar: userAvatar
+         ))
+         }
+         }
+         }*/
+        /*profileController.configure(with: UserProfileViewModel(
+         userName: nil,
+         userDescription: nil,
+         userAvatar: nil
+         ))*/
         
-        var userName: String?
-        var userDectription: String?
-        var userAvatar: UIImage?
-        
-        profileSaver.loadUserName { name in
-            userName = name
-            
-            profileSaver.loadDescription { description in
-                userDectription = description
-                
-                profileSaver.loadImage { image in
-                    userAvatar = image
-                    
-                    profileController.configure(with: UserProfileViewModel(
-                        userName: userName,
-                        userDescription: userDectription,
-                        userAvatar: userAvatar
-                    ))
-                }
-            }
-        }
-        
+        profileController.configureUserProfileDataManager(with: userProfileDataManager, cancellables)
         profileController.configureTheme(with: theme)
         present(profileController, animated: true)
     }
@@ -265,6 +292,9 @@ class ConversationsListViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        
+        
+        
         gradient.colors = [
             UIColor(rgb: "#F19FB4")?.cgColor ?? UIColor.lightGray.cgColor,
             UIColor(rgb: "EE7B95")?.cgColor ?? UIColor.gray.cgColor
@@ -272,7 +302,7 @@ class ConversationsListViewController: UIViewController {
         
         gradient.startPoint = CGPoint(x: 0.5, y: 0.25)
         gradient.endPoint = CGPoint(x: 0.5, y: 0.75)
-        profileImageView.layer.addSublayer(gradient)
+        //profileImageView.layer.addSublayer(gradient)
         gradient.frame = profileImageView.bounds
         gradient.cornerRadius = 16
         
@@ -281,7 +311,7 @@ class ConversationsListViewController: UIViewController {
         initialsLabel.textAlignment = .center
         initialsLabel.textColor = .white
         initialsLabel.text = "SJ"
-        profileImageView.addSubview(initialsLabel)
+        // profileImageView.addSubview(initialsLabel)
         
         Logger.shared.printLog(log: "Called method: \(#function)")
     }

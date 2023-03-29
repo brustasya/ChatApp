@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8549A83B29D2F69C00F0B2E3 /* UserProfileDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549A83A29D2F69C00F0B2E3 /* UserProfileDataManager.swift */; };
 		85A1E7C629A687BA004AD1F4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7C529A687BA004AD1F4 /* AppDelegate.swift */; };
 		85A1E7CA29A687BA004AD1F4 /* ConversationsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A1E7C929A687BA004AD1F4 /* ConversationsListViewController.swift */; };
 		85A1E7CF29A687BD004AD1F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 85A1E7CE29A687BD004AD1F4 /* Assets.xcassets */; };
@@ -27,6 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8549A83A29D2F69C00F0B2E3 /* UserProfileDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileDataManager.swift; sourceTree = "<group>"; };
 		85A1E7C229A687BA004AD1F4 /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85A1E7C529A687BA004AD1F4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		85A1E7C929A687BA004AD1F4 /* ConversationsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListViewController.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 			children = (
 				85F3A8F129CA04EB00ACBB6C /* GCDProfileSaver.swift */,
 				85F3A8F329CA6A0D00ACBB6C /* OperationProfileSaver.swift */,
+				8549A83A29D2F69C00F0B2E3 /* UserProfileDataManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -222,6 +225,7 @@
 				85F3A8F429CA6A0D00ACBB6C /* OperationProfileSaver.swift in Sources */,
 				85A1E7C629A687BA004AD1F4 /* AppDelegate.swift in Sources */,
 				85A1E7F629B88B3C004AD1F4 /* UserProfileViewModel.swift in Sources */,
+				8549A83B29D2F69C00F0B2E3 /* UserProfileDataManager.swift in Sources */,
 				85A1E7EC29AF6BF0004AD1F4 /* UIColor.swift in Sources */,
 				85A1E7F429B5E0CA004AD1F4 /* ConversationCell.swift in Sources */,
 				85F3A8F229CA04EB00ACBB6C /* GCDProfileSaver.swift in Sources */,

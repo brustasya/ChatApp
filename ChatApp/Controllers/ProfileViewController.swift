@@ -7,12 +7,14 @@
 
 import UIKit
 import AVFoundation
+import Combine
 
 class ProfileViewController: UIViewController {
     private lazy var titleLabel = UILabel()
     private lazy var editButton = UIButton()
     private lazy var closeButton = UIButton()
     private lazy var profileImageView = UIImageView()
+    private lazy var editProfileImageView = UIImageView()
     private lazy var addPhotoButton = UIButton()
     private lazy var nameLabel = UILabel()
     private lazy var descriptionLabel = UILabel()
@@ -69,12 +71,60 @@ class ProfileViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private lazy var userProfileDataManager = UserProfileDataManager()
+    private lazy var cancellables = Set<AnyCancellable>()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print(addPhotoButton.frame)
         
         setupView()
         setupEditUI()
+        
+        userProfileDataManager.loadUserProfile()
+            .map { $0?.userName ?? "No name" }
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.text, on: nameLabel)
+            .store(in: &cancellables)
+        
+        userProfileDataManager.loadUserProfile()
+            .map { $0?.userName == "No name" ? "" : $0?.userName ?? "" }
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.text, on: nameTextField)
+            .store(in: &cancellables)
+        
+        userProfileDataManager.loadUserProfile()
+            .map { $0?.userDescription ?? "No bio specified" }
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.text, on: descriptionLabel)
+            .store(in: &cancellables)
+        
+        userProfileDataManager.loadUserProfile()
+            .map { $0?.userDescription == "No bio specified" ? "" : $0?.userDescription ?? "" }
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.text, on: bioTextField)
+            .store(in: &cancellables)
+        
+        userProfileDataManager.loadUserProfile()
+            .compactMap { $0?.userAvatar ?? UIImage(named: "avatar")?.pngData() }
+            .map { UIImage(data: $0) ?? UIImage(named: "avatar") }
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.image, on: profileImageView)
+            .store(in: &cancellables)
+        
+        userProfileDataManager.loadUserProfile()
+            .compactMap { $0?.userAvatar ?? UIImage(named: "avatar")?.pngData() }
+            .map { UIImage(data: $0) ?? UIImage(named: "avatar") }
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.image, on: editProfileImageView)
+            .store(in: &cancellables)
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -104,7 +154,7 @@ class ProfileViewController: UIViewController {
         if profileModel.userAvatar == nil {
             profileImageView.image = UIImage(named: "avatar")
         } else {
-            profileImageView.image = profileModel.userAvatar
+            profileImageView.image = UIImage(data: profileModel.userAvatar ?? Data())
         }
     }
     
@@ -119,17 +169,18 @@ class ProfileViewController: UIViewController {
     }
     
     private func setupEditUI() {
-        setupChoiceConservationButton()
+        //setupChoiceConservationButton()
         setupCancelButton()
         setupSaveButton()
         setupEditViews()
+        setupEditProfileImageView()
         
         view.addSubview(activityIndicatorView)
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            activityIndicatorView.centerYAnchor.constraint(equalTo: choiceConservationButton.centerYAnchor),
-            activityIndicatorView.centerXAnchor.constraint(equalTo: choiceConservationButton.centerXAnchor)
+            activityIndicatorView.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor),
+            activityIndicatorView.centerXAnchor.constraint(equalTo: saveButton.centerXAnchor)
         ])
     }
     
@@ -233,6 +284,12 @@ class ProfileViewController: UIViewController {
         bottomSeparator.isHidden = true
         topSeparator.isHidden = true
         centerSeparatop.isHidden = true
+    }
+    
+    func configureUserProfileDataManager(with userProfileDataManager: UserProfileDataManager,
+                                         _ cancellables: Set<AnyCancellable>) {
+        self.userProfileDataManager = userProfileDataManager
+        self.cancellables = cancellables
     }
     
     private func setupChoiceConservationButton() {
@@ -402,8 +459,8 @@ class ProfileViewController: UIViewController {
     }
     
     private func setupSaveButton() {
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(saveButton)
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
         
         saveButton.setTitle("Save", for: .normal)
         saveButton.setTitleColor(.systemBlue, for: .normal)
@@ -449,41 +506,95 @@ class ProfileViewController: UIViewController {
     }
     
     @objc private func saveProfileDataButtonTaped() {
+        saveButton.isHidden = true
+        activityIndicatorView.startAnimating()
+        isSaving = true
+        nameTextField.isEnabled = false
+        bioTextField.isEnabled = false
+        addPhotoButton.isEnabled = false
         
+        let userProfileModel = UserProfileViewModel(
+            userName: nameTextField.text == "" ? "No name" : nameTextField.text,
+            userDescription: bioTextField.text == "" ? "No bio specified" : bioTextField.text,
+            userAvatar: editProfileImageView.image?.pngData()
+        )
+        
+        userProfileDataManager.saveUserProfile(userProfileModel) { [weak self] (isSaved) in
+            if ((self?.isSaving) != nil && self?.isSaving == true) {
+                if isSaved {
+                    let alertController = UIAlertController(title: "Success", message: "You are breathtaking", preferredStyle: .alert)
+                    
+                    let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
+                        self?.disableEditMode()
+                    }
+                    
+                    alertController.addAction(okAction)
+                    
+                    self?.present(alertController, animated: true, completion: nil)
+                } else {
+                    let alertController = UIAlertController(title: "Could not save profile", message: "Try again", preferredStyle: .alert)
+                    
+                    let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
+                        self?.disableEditMode()
+                    }
+                    
+                    let tryAgainAction = UIAlertAction(title: "Try Again", style: .default) { [weak self] (_) in
+                        self?.saveProfileDataButtonTaped()
+                    }
+                    
+                    alertController.addAction(okAction)
+                    alertController.addAction(tryAgainAction)
+                    
+                    self?.present(alertController, animated: true, completion: nil)
+                }
+                
+                self?.saveButton.isHidden = false
+            }
+            self?.activityIndicatorView.stopAnimating()
+            self?.isSaving = false
+            self?.nameTextField.isEnabled = true
+            self?.bioTextField.isEnabled = true
+            self?.addPhotoButton.isEnabled = true
+            
+        }
     }
     
     @objc private func disableEditMode() {
         if isSaving {
-            profileSaver?.cancel()
+            //profileSaver?.cancel()
+            userProfileDataManager.cancelSave()
+            activityIndicatorView.stopAnimating()
+            isSaving = false
+            saveButton.isHidden = true
         }
         
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            return
-        }
-        
-        let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
-        
-        var userName: String?
-        var userDectription: String?
-        var userAvatar: UIImage?
-        
-        profileSaver.loadUserName { [weak self] name in
-            userName = name
-            
-            profileSaver.loadDescription { [weak self] description in
-                userDectription = description
-                
-                profileSaver.loadImage { [weak self] image in
-                    userAvatar = image
-                    
-                    self?.configure(with: UserProfileViewModel(
-                        userName: userName,
-                        userDescription: userDectription,
-                        userAvatar: userAvatar
-                    ))
-                }
-            }
-        }
+        /*guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+         return
+         }
+         
+         let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
+         
+         var userName: String?
+         var userDectription: String?
+         var userAvatar: UIImage?
+         
+         profileSaver.loadUserName { [weak self] name in
+         userName = name
+         
+         profileSaver.loadDescription { [weak self] description in
+         userDectription = description
+         
+         profileSaver.loadImage { [weak self] image in
+         userAvatar = image
+         
+         self?.configure(with: UserProfileViewModel(
+         userName: userName,
+         userDescription: userDectription,
+         userAvatar: userAvatar
+         ))
+         }
+         }
+         }*/
         
         isEdittingEnable = false
         isPhotoEdited = false
@@ -573,6 +684,7 @@ class ProfileViewController: UIViewController {
         if (!isEdittingEnable) {
             nameTextField.text = nameLabel.text == "No name" ? "" : nameLabel.text
             bioTextField.text = descriptionLabel.text == "No bio specified" ? "" : descriptionLabel.text
+            editProfileImageView.image = profileImageView.image
             isEdittingEnable = true
             changeEditEnable()
             nameTextField.becomeFirstResponder()
@@ -593,7 +705,8 @@ class ProfileViewController: UIViewController {
         descriptionLabel.isHidden = isEdittingEnable
         
         cancelButton.isHidden = !isEdittingEnable
-        choiceConservationButton.isHidden = !isEdittingEnable
+        //choiceConservationButton.isHidden = !isEdittingEnable
+        saveButton.isHidden = !isEdittingEnable
         viewNameBackground.isHidden = !isEdittingEnable
         nameTextField.isHidden = !isEdittingEnable
         viewBioBackground.isHidden = !isEdittingEnable
@@ -601,6 +714,7 @@ class ProfileViewController: UIViewController {
         bottomSeparator.isHidden = !isEdittingEnable
         topSeparator.isHidden = !isEdittingEnable
         centerSeparatop.isHidden = !isEdittingEnable
+        editProfileImageView.isHidden = !isEdittingEnable
     }
     
     private func setupImageView() {
@@ -629,6 +743,23 @@ class ProfileViewController: UIViewController {
          initialsLabel.centerXAnchor.constraint(equalTo: profileImageView.centerXAnchor),
          initialsLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor)
          ])*/
+    }
+    
+    private func setupEditProfileImageView() {
+        editProfileImageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(editProfileImageView)
+        
+        NSLayoutConstraint.activate([
+            editProfileImageView.widthAnchor.constraint(equalToConstant: 150),
+            editProfileImageView.heightAnchor.constraint(equalToConstant: 150),
+            editProfileImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 49),
+            editProfileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
+        
+        editProfileImageView.layer.cornerRadius = 75
+        editProfileImageView.clipsToBounds = true
+        
+        editProfileImageView.isHidden = true
     }
     
     private func setupAddPhotoButton() {
@@ -778,7 +909,7 @@ extension ProfileViewController: UIImagePickerControllerDelegate & UINavigationC
             return
         }
         
-        profileImageView.image = image
+        editProfileImageView.image = image
         isPhotoEdited = true
         
         initialsLabel.isHidden = true
