@@ -13,7 +13,16 @@ class UserProfileDataManager {
     private let userProfileSubject = CurrentValueSubject<UserProfileViewModel?, Never>(nil)
     
     private let fileManager = FileManager.default
-    private let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    
+    private let documentsURL: URL = {
+        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        if let url = urls.first {
+            return url
+        } else {
+            fatalError("Could not create documents directory URL.")
+        }
+    }()
+    
     private let userProfileURL: URL
     
     init() {
