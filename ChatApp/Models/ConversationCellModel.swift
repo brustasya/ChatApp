@@ -5,12 +5,20 @@
 //  Created by Станислава on 06.03.2023.
 //
 
-import Foundation
+import UIKit
+import TFSChatTransport
 
-struct ConversationCellModel: Hashable {
-    let name: String
-    let message: String?
-    let date: Date?
-    let isOnline: Bool
-    let hasUnreadMessages: Bool
+extension Channel: Hashable {
+    public static func == (lhs: Channel, rhs: Channel) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        
+    }
+}
+
+struct ChannelModel: Hashable {
+    let id = UUID()
+    let channel: Channel
 }

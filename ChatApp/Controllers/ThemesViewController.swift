@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum Theme : String{
+enum Theme: String {
     case light
     case dark
 }
@@ -16,6 +16,7 @@ class ThemesViewController: UIViewController {
 
     weak var delegate: ThemesPickerDelegate?
     var themeChangedHandler: ((Theme) -> Void)?
+    private lazy var theme: Theme = .light
     
     let backgroundView = UIView()
     let lightThemeButton = UIButton()
@@ -28,13 +29,13 @@ class ThemesViewController: UIViewController {
     private let lightTheme = [
         "backgroundColor": UIColor.systemGray6,
         "viewBackgroundColor": UIColor.white,
-        "textColor": UIColor.black,
+        "textColor": UIColor.black
     ]
 
     private let darkTheme = [
         "backgroundColor": UIColor.black,
         "viewBackgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
-        "textColor": UIColor.white,
+        "textColor": UIColor.white
     ]
     
     override func viewDidLoad() {
@@ -68,7 +69,6 @@ class ThemesViewController: UIViewController {
             backgroundView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
     }
-    
     
     private func setupNavBar() {
         self.navigationController?.navigationBar.prefersLargeTitles = false
@@ -106,7 +106,7 @@ class ThemesViewController: UIViewController {
             darkView.heightAnchor.constraint(equalToConstant: 55.38),
             darkView.widthAnchor.constraint(equalToConstant: 79),
             darkView.trailingAnchor.constraint(equalTo: backgroundView.trailingAnchor, constant: -50),
-            darkView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 24),
+            darkView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 24)
         ])
         
     }
@@ -131,7 +131,7 @@ class ThemesViewController: UIViewController {
             dayLabel.topAnchor.constraint(equalTo: lightView.bottomAnchor, constant: 10),
             
             nightLabel.centerXAnchor.constraint(equalTo: darkView.centerXAnchor),
-            nightLabel.topAnchor.constraint(equalTo: darkView.bottomAnchor, constant: 10),
+            nightLabel.topAnchor.constraint(equalTo: darkView.bottomAnchor, constant: 10)
         ])
     }
     
@@ -161,8 +161,6 @@ class ThemesViewController: UIViewController {
         darkThemeButton.translatesAutoresizingMaskIntoConstraints = false
         darkThemeButton.addTarget(self, action: #selector(changeThemeButtonTapped), for: .touchUpInside)
         view.addSubview(darkThemeButton)
-        
-        
         
         NSLayoutConstraint.activate([
             lightThemeButton.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor, constant: -24),
@@ -213,7 +211,6 @@ class ThemesViewController: UIViewController {
         ])
     }
 
-    
     @objc private func changeThemeButtonTapped(_ sender: UIButton) {
         if sender == lightThemeButton {
             lightThemeButton.isSelected = true
@@ -223,11 +220,10 @@ class ThemesViewController: UIViewController {
             darkThemeButton.tintColor = .lightGray
             
             themeChangedHandler?(Theme.light)
-            //delegate?.themesPicker(didSelectTheme: Theme.light)
+            // delegate?.themesPicker(didSelectTheme: Theme.light)
             
             changeTheme(lightTheme)
-        }
-        else if sender == darkThemeButton {
+        } else if sender == darkThemeButton {
             lightThemeButton.isSelected = false
             darkThemeButton.isSelected = true
             
@@ -235,13 +231,14 @@ class ThemesViewController: UIViewController {
             lightThemeButton.tintColor = .lightGray
             
             themeChangedHandler?(Theme.dark)
-            //delegate?.themesPicker(didSelectTheme: Theme.dark)
+            // delegate?.themesPicker(didSelectTheme: Theme.dark)
             
             changeTheme(darkTheme)
         }
     }
     
     func configure(with theme: Theme) {
+        self.theme = theme
         if theme == Theme.light {
             lightThemeButton.isSelected = true
             lightThemeButton.tintColor = .systemBlue
@@ -264,6 +261,7 @@ class ThemesViewController: UIViewController {
         backgroundView.backgroundColor = theme["viewBackgroundColor"]
         dayLabel.textColor = theme["textColor"]
         nightLabel.textColor = theme["textColor"]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: theme["textColor"] ?? .black]
     }
     
     @objc func lablesTapped(_ sender: UITapGestureRecognizer) {
@@ -277,6 +275,8 @@ class ThemesViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:
+                                                                                theme == Theme.dark ? UIColor.white : UIColor.black]
         setupNavBar()
     }
     override func viewWillDisappear(_ animated: Bool) {

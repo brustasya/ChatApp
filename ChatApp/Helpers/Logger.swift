@@ -8,13 +8,13 @@
 import Foundation
 
 protocol LoggerLogic {
-    func printLog(log : String)
+    func printLog(log: String)
 }
 
-class Logger : LoggerLogic {
+class Logger: LoggerLogic {
     static let shared = Logger()
     
-    func printLog(log : String) {
+    func printLog(log: String) {
         #if DEBUG
             print(log)
         #endif

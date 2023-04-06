@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import TFSChatTransport
 
 protocol ConfigurableViewProtocol {
     associatedtype ConfigurationModel
@@ -13,9 +14,10 @@ protocol ConfigurableViewProtocol {
 }
 
 class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
-    typealias ConfigurationModel = ConversationCellModel
     
-    static let reuseIdentifier = "ConversationCell"
+    typealias ConfigurationModel = ChannelModel
+    
+    // static let reuseIdentifier = "ConversationCell"
     
     private lazy var nameLabel = UILabel()
     private lazy var messageLabel = UILabel()
@@ -71,6 +73,7 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
             
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 17),
             nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 12),
+            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -100),
             
             messageLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             messageLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 12),
@@ -83,28 +86,38 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
             disclosureImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             disclosureImageView.centerYAnchor.constraint(equalTo: dateLabel.centerYAnchor),
             disclosureImageView.widthAnchor.constraint(equalToConstant: 8),
-            disclosureImageView.heightAnchor.constraint(equalToConstant: 15),
+            disclosureImageView.heightAnchor.constraint(equalToConstant: 15)
         ])
         
         avatarImageView.layer.cornerRadius = 22.5
-        avatarImageView.backgroundColor = .gray
+        avatarImageView.image = UIImage(named: "avatar")
+        avatarImageView.clipsToBounds = true
         
         nameLabel.font = UIFont.boldSystemFont(ofSize: 17)
-        //nameLabel.textColor = .black
+        dateLabel.font = UIFont.systemFont(ofSize: 15)
         
         messageLabel.numberOfLines = 2
-        
-        dateLabel.font = UIFont.systemFont(ofSize: 15)
-        //dateLabel.textColor = .gray
-        
-        //disclosureImageView.tintColor = .lightGray
-        setupGreenCircle()
+        messageLabel.font = UIFont.systemFont(ofSize: 15)
+        messageLabel.textColor = theme == Theme.dark ? .white : .gray
     }
     
-    func configure(with model: ConfigurationModel) {
-        nameLabel.text = model.name
-        messageLabel.text = model.message ?? "No messages yet"
+    func configure(with model: ChannelModel) {
+        nameLabel.text = model.channel.name == "" ? "No name" : model.channel.name
+        messageLabel.text = model.channel.lastMessage ?? "No messages yet"
         
+        if let logoURL = model.channel.logoURL,
+           let imageUrl = URL(string: logoURL) {
+            let task = URLSession.shared.dataTask(with: imageUrl) { [weak self] data, _, error in
+                if let error = error {
+                    print("Error loading image: \(error.localizedDescription)")
+                } else if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self?.avatarImageView.image = image
+                    }
+                }
+            }
+            task.resume()
+        }
 
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "HH:mm"
@@ -113,7 +126,7 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         dateFormatter.dateFormat = "dd MMM"
 
         let now = Date()
-        let lastMessageDate = model.date ?? Date()
+        let lastMessageDate = model.channel.lastActivity ?? Date()
         let calendar = Calendar.current
         
         if calendar.compare(lastMessageDate, to: now, toGranularity: .day) == .orderedAscending {
@@ -122,36 +135,16 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
             dateLabel.text = timeFormatter.string(from: lastMessageDate)
         }
         
-        if model.date == nil {
+        if model.channel.lastActivity == nil {
             dateLabel.text = ""
-        }
-        
-        isOnline = model.isOnline
-        if isOnline {
-            whiteCircleImageView.isHidden = false
-            greenCircleImageView.isHidden = false
-        } else {
-            whiteCircleImageView.isHidden = true
-            greenCircleImageView.isHidden = true
-        }
-        
-        hasUnreadMessages = model.hasUnreadMessages
-        
-        if hasUnreadMessages == true {
-            messageLabel.font = UIFont.boldSystemFont(ofSize: 15)
-            messageLabel.textColor = theme == Theme.dark ? .white : .black
-        } else {
-            messageLabel.font = UIFont.systemFont(ofSize: 15)
-            messageLabel.textColor = theme == Theme.dark ? .systemGray5 : .gray
         }
         
         if messageLabel.text == "No messages yet" {
             messageLabel.font = .systemFont(ofSize: 15, weight: .semibold)
-            messageLabel.textColor = theme == Theme.dark ? .systemGray5 : .gray
             disclosureImageView.isHidden = true
-        }
-        else {
+        } else {
             disclosureImageView.isHidden = false
+            messageLabel.font = .systemFont(ofSize: 15)
         }
     }
     
@@ -161,7 +154,6 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         whiteCircleImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(whiteCircleImageView)
         
-        
         greenCircleImageView.backgroundColor = .systemGreen
         greenCircleImageView.layer.cornerRadius = 6
         greenCircleImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -170,7 +162,6 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         NSLayoutConstraint.activate([
             whiteCircleImageView.heightAnchor.constraint(equalToConstant: 15),
             whiteCircleImageView.widthAnchor.constraint(equalToConstant: 15),
-            //whiteCircleImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 30.5),
             whiteCircleImageView.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
             whiteCircleImageView.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor, constant: 31),
             
@@ -184,17 +175,19 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
     func separatorConfigure(with isVisible: Bool) {
         if isVisible {
             separatorLine.isHidden = false
-        }
-        else {
+        } else {
             separatorLine.isHidden = true
         }
     }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
         contentView.backgroundColor = theme == Theme.dark ? #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1) : .white
         nameLabel.textColor = theme == Theme.dark ? .white : .black
         dateLabel.textColor = theme == Theme.dark ? .systemGray5 : .gray
         disclosureImageView.tintColor = theme == Theme.dark ? .systemGray5 : .lightGray
+        avatarImageView.image = UIImage(named: "avatar")
+        messageLabel.textColor = theme == Theme.dark ? .white : .gray
     }
     
     func configureTheme(with theme: Theme) {
@@ -202,6 +195,7 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         contentView.backgroundColor = theme == Theme.dark ? #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1) : .white
         nameLabel.textColor = theme == Theme.dark ? .white : .black
         dateLabel.textColor = theme == Theme.dark ? .systemGray5 : .gray
+        messageLabel.textColor = theme == Theme.dark ? .white : .gray
         disclosureImageView.tintColor = theme == Theme.dark ? .systemGray5 : .lightGray
     }
     

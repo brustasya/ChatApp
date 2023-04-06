@@ -46,7 +46,6 @@ class UserProfileDataManager {
         }
     }
     
-    
     func loadUserProfile() -> AnyPublisher<UserProfileViewModel?, Never> {
         let defaultProfileModel = UserProfileViewModel(
             userName: "No name",

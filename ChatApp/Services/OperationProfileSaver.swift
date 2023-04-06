@@ -212,7 +212,10 @@ class LoadImageOperation: Operation {
             let jsonData = try Data(contentsOf: imageURL)
             let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
             
-            if let imageDict = json as? [String: String], let base64ImageString = imageDict["base64"], let imageData = Data(base64Encoded: base64ImageString), let image = UIImage(data: imageData) {
+            if let imageDict = json as? [String: String],
+                let base64ImageString = imageDict["base64"],
+                let imageData = Data(base64Encoded: base64ImageString),
+                let image = UIImage(data: imageData) {
                 completion(image)
             } else {
                 completion(nil)

@@ -131,7 +131,6 @@ class GCDProfileSaver: ProfileSaver {
         }
     }
     
-    
     func loadUserName(completion: @escaping (String?) -> Void) {
         queue.async {
             do {

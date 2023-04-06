@@ -4,13 +4,13 @@
 //
 //  Created by Станислава on 22.02.2023.
 //
-
+import Foundation
 import UIKit
+import TFSChatTransport
 import Combine
 
 enum Section {
     case online
-    case history
 }
 
 class ConversationsListViewController: UIViewController {
@@ -21,11 +21,11 @@ class ConversationsListViewController: UIViewController {
     
     private let tableView = UITableView()
     private lazy var dataSource = makeDataSource()
-    private lazy var onlineConversations: [ConversationCellModel] = []
-    private lazy var offlineConversations: [ConversationCellModel] = []
+    private lazy var userId = ""
     
-    private let userProfileDataManager = UserProfileDataManager()
-    private lazy var cancellables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
+    private lazy var channels = [ChannelModel]()
+    private lazy var chatService = ChatService(host: "167.235.86.234", port: 8080)
     
     private lazy var theme = Theme.light
     
@@ -41,29 +41,6 @@ class ConversationsListViewController: UIViewController {
         "secondaryTextColor": UIColor.systemGray5
     ]
     
-    let conversationCellModels = [
-        ConversationCellModel(name: "John1", message: nil, date: nil, isOnline: true, hasUnreadMessages: false),
-        ConversationCellModel(name: "Mike1", message: "How are you?", date: Date(timeIntervalSinceNow: -169400), isOnline: false, hasUnreadMessages: false),
-        ConversationCellModel(name: "Anna1", message: "Nice to meet you\nHow are you? Whats up? Whats up? Whats up? Whats up? ", date: Date(), isOnline: true, hasUnreadMessages: false),
-        ConversationCellModel(name: "Susan1", message: "See you later", date: Date(), isOnline: false, hasUnreadMessages: true),
-        ConversationCellModel(name: "John444", message: "Hello", date: Date(), isOnline: true, hasUnreadMessages: true),
-        ConversationCellModel(name: "Mike2", message: "How are you?", date: Date(), isOnline: false, hasUnreadMessages: false),
-        ConversationCellModel(name: "Anna2", message: "Nice to meet you", date: Date(), isOnline: true, hasUnreadMessages: false),
-        ConversationCellModel(name: "Susan2", message: "See you later", date: Date(), isOnline: false, hasUnreadMessages: true),
-        ConversationCellModel(name: "John2", message: "Hello", date: Date(), isOnline: true, hasUnreadMessages: true),
-        ConversationCellModel(name: "Mike20", message: "How are you?", date: Date(), isOnline: false, hasUnreadMessages: false),
-        ConversationCellModel(name: "Anna3", message: "Nice to meet you", date: Date(), isOnline: true, hasUnreadMessages: false),
-        ConversationCellModel(name: "Susan4", message: "See you later", date: Date(), isOnline: false, hasUnreadMessages: true),
-        ConversationCellModel(name: "John5", message: "Hello", date: Date(), isOnline: true, hasUnreadMessages: true),
-        ConversationCellModel(name: "Mike6", message: "How are you?", date: Date(), isOnline: false, hasUnreadMessages: false),
-        ConversationCellModel(name: "Anna7", message: "Nice to meet you", date: Date(), isOnline: true, hasUnreadMessages: false),
-        ConversationCellModel(name: "Susan8", message: "See you later", date: Date(), isOnline: false, hasUnreadMessages: true),
-        ConversationCellModel(name: "John9", message: "Hello", date: Date(), isOnline: true, hasUnreadMessages: true),
-        ConversationCellModel(name: "Mike10", message: "How are you?", date: Date(), isOnline: false, hasUnreadMessages: false),
-        ConversationCellModel(name: "Anna11", message: "Nice to meet you", date: Date(), isOnline: true, hasUnreadMessages: false),
-        ConversationCellModel(name: "Susan12", message: "See you later", date: Date(), isOnline: false, hasUnreadMessages: true)
-    ]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -71,31 +48,20 @@ class ConversationsListViewController: UIViewController {
         setupTableView()
         applySnapshot(animatingDifferences: false)
         
-        /*if let themeRawValue = UserDefaults.standard.string(forKey: "theme"),
-         let savedTheme = Theme(rawValue: themeRawValue) {
-         self.theme = savedTheme
-         }*/
-        
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            return
+        let userId = UIDevice.current.identifierForVendor?.uuidString
+
+        if let savedUserId = UserDefaults.standard.string(forKey: "userId") {
+            print("Saved user ID: \(savedUserId)")
+            self.userId = savedUserId
+        } else {
+            UserDefaults.standard.set(userId, forKey: "userId")
+            print("New user ID saved: \(userId ?? "")")
+            self.userId = userId ?? ""
         }
         
-        let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
-        
-        profileSaver.loadTheme { [weak self] theme in
-            if let theme = theme {
-                self?.theme = theme
-                if theme == Theme.dark {
-                    self?.changeTheme(self?.darkTheme ?? [:])
-                    self?.tableView.reloadData()
-                }
-                else {
-                    self?.changeTheme(self?.lightTheme ?? [:])
-                }
-            } else {
-                self?.changeTheme(self?.lightTheme ?? [:])
-            }
-        }
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(loadChannels), for: .valueChanged)
+        tableView.refreshControl = refreshControl
         
         Logger.shared.printLog(log: "Called method: \(#function)")
     }
@@ -107,11 +73,44 @@ class ConversationsListViewController: UIViewController {
         tableView.register(ConversationCell.self, forCellReuseIdentifier: "ConversationCell")
         tableView.delegate = self
         tableView.separatorColor = .clear
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
+        loadChannels()
+    }
+    
+    @objc private func loadChannels() {
+        chatService.loadChannels()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .finished:
+                        print("Load channels finished")
+                    case .failure(let error):
+                        print("Load channels failed with error: \(error.localizedDescription)")
+                    }
+                    self?.tableView.refreshControl?.endRefreshing()
+                },
+                receiveValue: { [weak self] channels in
+                    self?.channels = channels.reversed().map({ channel in
+                        ChannelModel(channel: channel)
+                    })
+                    self?.applySnapshot()
+                }
+            )
+            .store(in: &cancellables)
     }
     
     private func makeDataSource() -> DataSource {
         let dataSource = DataSource(tableView: tableView) {[weak self] tableView, indexPath, cellModel in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier, for: indexPath) as? ConversationCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "ConversationCell", for: indexPath) as? ConversationCell else {
                 fatalError("Cannot create ConversationCell")
             }
             cell.configureTheme(with: self?.theme ?? Theme.light)
@@ -122,158 +121,103 @@ class ConversationsListViewController: UIViewController {
         return dataSource
     }
     
-    private func applySnapshot(animatingDifferences: Bool = true) {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, ConversationCellModel>()
-        snapshot.appendSections([.online, .history])
+    private func applySnapshot(animatingDifferences: Bool = false) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, ChannelModel>()
+        snapshot.appendSections([.online])
         
-        onlineConversations = conversationCellModels.filter { $0.isOnline }
-        offlineConversations = conversationCellModels.filter { !$0.isOnline }
-        
-        snapshot.appendItems(onlineConversations, toSection: .online)
-        snapshot.appendItems(offlineConversations, toSection: .history)
+        snapshot.appendItems(channels.reversed(), toSection: .online)
         
         dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
     private func setupNavbar() {
-        let imageConfiguration = UIImage.SymbolConfiguration(scale: .medium)
-        let settingsImage = UIImage(systemName: "gear", withConfiguration: imageConfiguration)
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: settingsImage,
+        let barButtonItem = UIBarButtonItem(
+            title: "Add Channel",
             style: .plain,
             target: self,
-            action: #selector(openSettings)
+            action: #selector(addChannel)
         )
-        
-        view.addSubview(profileImageView)
-        profileImageView.translatesAutoresizingMaskIntoConstraints = false
-        profileImageView.widthAnchor.constraint(equalToConstant: 32).isActive = true
-        profileImageView.heightAnchor.constraint(equalToConstant: 32).isActive = true
-        profileImageView.layer.cornerRadius = 16
-        profileImageView.clipsToBounds = true
-        profileImageView.image = UIImage(named: "avatar")
-        
-        userProfileDataManager.loadUserProfile()
-            .compactMap { $0?.userAvatar ?? UIImage(named: "avatar")?.pngData() }
-            .map { UIImage(data: $0) ?? UIImage(named: "avatar") }
-            .subscribe(on: DispatchQueue.global()) // загрузка в фоновом потоке
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.image, on: profileImageView)
-            .store(in: &cancellables)
-        
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openProfile))
-        profileImageView.addGestureRecognizer(tapGestureRecognizer)
-        
-        let barButtonItem = UIBarButtonItem(customView: profileImageView)
         navigationItem.rightBarButtonItem = barButtonItem
-        
-        
-        profileImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        
-        navigationItem.title = "Chat"
+                
+        navigationItem.title = "Channels"
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
-    @objc private func openProfile() {
-        let profileController = ProfileViewController()
+    @objc private func addChannel() {
+        let alertController = UIAlertController(title: "Create Channel", message: nil, preferredStyle: .alert)
         
-        /*guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-         return
-         }
-         
-         let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
-         
-         var userName: String?
-         var userDectription: String?
-         var userAvatar: UIImage?
-         
-         profileSaver.loadUserName { name in
-         userName = name
-         
-         profileSaver.loadDescription { description in
-         userDectription = description
-         
-         profileSaver.loadImage { image in
-         userAvatar = image
-         
-         profileController.configure(with: UserProfileViewModel(
-         userName: userName,
-         userDescription: userDectription,
-         userAvatar: userAvatar
-         ))
-         }
-         }
-         }*/
-        /*profileController.configure(with: UserProfileViewModel(
-         userName: nil,
-         userDescription: nil,
-         userAvatar: nil
-         ))*/
-        
-        profileController.configureUserProfileDataManager(with: userProfileDataManager, cancellables)
-        profileController.configureTheme(with: theme)
-        present(profileController, animated: true)
-    }
-    
-    @objc private func openSettings() {
-        let themesViewController = ThemesViewController()
-        
-        themesViewController.delegate = self
-        
-        // retain cycle потенциально может возникнуть из-за того, что self захвачен в замыкании themeChangedHandler
-        // и может сохраняться внутри themesViewController. Чтобы избежать возникновения retain cycle,
-        // нужно захватывать self слабой ссылкой с помощью [weak self].
-        themesViewController.themeChangedHandler = { [weak self] theme in
-            self?.theme = theme
-            
-            if theme == Theme.dark {
-                self?.changeTheme(self?.darkTheme ?? [:])
-            }
-            else {
-                self?.changeTheme(self?.lightTheme ?? [:])
-            }
-            
-            self?.tableView.reloadData()
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Enter channel name"
         }
         
-        themesViewController.configure(with: theme)
-        self.navigationController?.pushViewController(themesViewController, animated: true)
+        let createAction = UIAlertAction(title: "Create", style: .default) { [weak self] _ in
+            guard let channelName = alertController.textFields?[0].text, !channelName.isEmpty else {
+                return
+            }
+            
+            self?.createChannel(channelName: channelName)
+            
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+
+        alertController.addAction(createAction)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
+
+    }
+    
+    private func createChannel(channelName: String) {
+        chatService.createChannel(name: channelName)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                // Обрабатываем завершение паблишера
+                switch completion {
+                case .finished:
+                    print("Channel created successfully")
+                case .failure(let error):
+                    print("Channel creation failed with error: \(error.localizedDescription)")
+                }
+            } receiveValue: { [weak self] channel in
+                // Добавляем созданный канал в массив и перезагружаем таблицу
+                self?.channels.append(ChannelModel(channel: channel))
+                self?.applySnapshot()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func configure(with theme: Theme) {
+        self.theme = theme
+        
+        view.backgroundColor = theme == Theme.dark ? .black : .white
+        if theme == Theme.dark {
+            changeTheme(darkTheme)
+        } else {
+            changeTheme(lightTheme)
+        }
+        
+        tableView.reloadData()
     }
     
     private func changeTheme(_ theme: [String: UIColor]) {
-        //UserDefaults.standard.setValue(self.theme.rawValue, forKey: "theme")
-        
-        self.navigationController?.navigationBar.largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: theme["textColor"] ?? UIColor.black
-        ]
-        
-        self.navigationController?.navigationBar.titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: theme["textColor"] ?? UIColor.black
-        ]
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: theme["textColor"] ?? .black]
         tableView.backgroundColor = theme["backgroundColor"]
+        view.backgroundColor = theme["backgroundColor"]
         
         UILabel.appearance(whenContainedInInstancesOf: [
             UITableViewHeaderFooterView.self
         ]).textColor = theme["secondaryTextColor"]
         
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            return
-        }
-        
-        let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
-        profileSaver.saveTheme(self.theme) { success in
-            if success {
-                print("Theme saved successfully")
-            } else {
-                print("Failed to save theme")
-            }
-        }
+        tableView.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor:
+                                                                                theme == Theme.dark ? UIColor.white : UIColor.black]
+        tabBarController?.tabBar.isHidden = false
         Logger.shared.printLog(log: "Called method: \(#function)")
     }
     
@@ -292,27 +236,6 @@ class ConversationsListViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        
-        
-        
-        gradient.colors = [
-            UIColor(rgb: "#F19FB4")?.cgColor ?? UIColor.lightGray.cgColor,
-            UIColor(rgb: "EE7B95")?.cgColor ?? UIColor.gray.cgColor
-        ]
-        
-        gradient.startPoint = CGPoint(x: 0.5, y: 0.25)
-        gradient.endPoint = CGPoint(x: 0.5, y: 0.75)
-        //profileImageView.layer.addSublayer(gradient)
-        gradient.frame = profileImageView.bounds
-        gradient.cornerRadius = 16
-        
-        let initialsLabel = UILabel(frame: CGRect(x: 0, y: 0, width: profileImageView.frame.width, height: 20))
-        initialsLabel.center = CGPoint(x: profileImageView.frame.size.width / 2, y: profileImageView.frame.size.height / 2)
-        initialsLabel.textAlignment = .center
-        initialsLabel.textColor = .white
-        initialsLabel.text = "SJ"
-        // profileImageView.addSubview(initialsLabel)
-        
         Logger.shared.printLog(log: "Called method: \(#function)")
     }
     
@@ -329,18 +252,7 @@ class ConversationsListViewController: UIViewController {
     }
 }
 
-final class DataSource: UITableViewDiffableDataSource<Section, ConversationCellModel> {
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0:
-            return "ONLINE"
-        case 1:
-            return "HISTORY"
-        default:
-            return nil
-        }
-    }
-}
+final class DataSource: UITableViewDiffableDataSource<Section, ChannelModel> { }
 
 // MARK: - UITableViewDelegate
 
@@ -352,8 +264,9 @@ extension ConversationsListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let conversationsViewController = ConversationsViewController()
-        conversationsViewController.configure(with: theme)
+        conversationsViewController.configure(theme: theme, channel: channels.reversed()[indexPath.row].channel, userId: userId)
         self.navigationController?.pushViewController(conversationsViewController, animated: true)
+        tabBarController?.tabBar.isHidden = true
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -361,7 +274,6 @@ extension ConversationsListViewController: UITableViewDelegate {
         return 76
     }
 }
-
 
 // MARK: - ThemesPickerDelegate
 
@@ -376,8 +288,7 @@ extension ConversationsListViewController: ThemesPickerDelegate {
         
         if theme == Theme.dark {
             changeTheme(darkTheme)
-        }
-        else {
+        } else {
             changeTheme(lightTheme)
         }
         

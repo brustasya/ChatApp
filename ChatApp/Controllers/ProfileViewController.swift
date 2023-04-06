@@ -10,51 +10,44 @@ import AVFoundation
 import Combine
 
 class ProfileViewController: UIViewController {
-    private lazy var titleLabel = UILabel()
-    private lazy var editButton = UIButton()
-    private lazy var closeButton = UIButton()
-    private lazy var profileImageView = UIImageView()
-    private lazy var editProfileImageView = UIImageView()
-    private lazy var addPhotoButton = UIButton()
-    private lazy var nameLabel = UILabel()
-    private lazy var descriptionLabel = UILabel()
-    private lazy var initialsLabel = UILabel()
-    private lazy var cancelButton = UIButton()
-    private lazy var choiceConservationButton = UIButton()
-    private lazy var saveButton = UIButton()
-    private lazy var nameTextField = UITextField()
-    private lazy var nameStackView = UIStackView()
-    private lazy var bioStackView = UIStackView()
-    private lazy var viewNameBackground = UIView()
-    private lazy var viewBioBackground = UIView()
-    private lazy var bioTextField = UITextField()
-    private lazy var bottomSeparator = UIView()
-    private lazy var topSeparator = UIView()
-    private lazy var centerSeparatop = UIView()
+    internal lazy var titleLabel = UILabel()
+    internal lazy var editButton = UIButton()
+    internal lazy var closeButton = UIButton()
+    internal lazy var profileImageView = UIImageView()
+    internal lazy var editProfileImageView = UIImageView()
+    internal lazy var addPhotoButton = UIButton()
+    internal lazy var nameLabel = UILabel()
+    internal lazy var descriptionLabel = UILabel()
+    internal lazy var cancelButton = UIButton()
+    internal lazy var saveButton = UIButton()
+    internal lazy var nameTextField = UITextField()
+    internal lazy var nameStackView = UIStackView()
+    internal lazy var bioStackView = UIStackView()
+    internal lazy var viewNameBackground = UIView()
+    internal lazy var viewBioBackground = UIView()
+    internal lazy var bioTextField = UITextField()
+    internal lazy var bottomSeparator = UIView()
+    internal lazy var topSeparator = UIView()
+    internal lazy var centerSeparatop = UIView()
+        
+    internal let pickerController = UIImagePickerController()
+    internal lazy var activityIndicatorView = UIActivityIndicatorView(style: .medium)
+    internal lazy var isEdittingEnable = false
+    internal lazy var theme = Theme.light
+    internal lazy var isPhotoEdited = false
+    internal lazy var isSaving = false
     
-    var sucsessShowAlert = true
+    internal lazy var userProfileDataManager = UserProfileDataManager()
+    internal lazy var cancellables = Set<AnyCancellable>()
     
-    private let pickerController = UIImagePickerController()
-    private let gradient = CAGradientLayer()
-    
-    private lazy var activityIndicatorView = UIActivityIndicatorView(style: .medium)
-    
-    private lazy var isEdittingEnable = false
-    private lazy var theme = Theme.light
-    
-    private lazy var isPhotoEdited = false
-    private lazy var isSaving = false
-    
-    private var profileSaver: ProfileSaver?
-    
-    private let lightTheme = [
+    internal let lightTheme = [
         "backgroundColor": UIColor.white,
         "editBackgroundColor": UIColor.systemGray6,
         "textColor": UIColor.black,
         "secondaryTextColor": UIColor.systemGray
     ]
     
-    private let darkTheme = [
+    internal let darkTheme = [
         "backgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
         "editBackgroundColor": UIColor.black,
         "textColor": UIColor.white,
@@ -63,7 +56,6 @@ class ProfileViewController: UIViewController {
     
     init() {
         super.init(nibName: nil, bundle: nil)
-        
         print(addPhotoButton.frame)
     }
     
@@ -71,15 +63,11 @@ class ProfileViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private lazy var userProfileDataManager = UserProfileDataManager()
-    private lazy var cancellables = Set<AnyCancellable>()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         print(addPhotoButton.frame)
         
         setupView()
-        setupEditUI()
         
         userProfileDataManager.loadUserProfile()
             .map { $0?.userName ?? "No name" }
@@ -127,20 +115,6 @@ class ProfileViewController: UIViewController {
         
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        gradient.colors = [
-            UIColor(rgb: "#F19FB4")?.cgColor ?? UIColor.lightGray.cgColor,
-            UIColor(rgb: "EE7B95")?.cgColor ?? UIColor.gray.cgColor
-        ]
-        gradient.startPoint = CGPoint(x: 0.5, y: 0.25)
-        gradient.endPoint = CGPoint(x: 0.5, y: 0.75)
-        //profileImageView.layer.addSublayer(gradient)
-        gradient.frame = profileImageView.bounds
-        gradient.cornerRadius = 75
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -166,10 +140,6 @@ class ProfileViewController: UIViewController {
         setupAddPhotoButton()
         setupNameLabel()
         setupDescriptionLabel()
-    }
-    
-    private func setupEditUI() {
-        //setupChoiceConservationButton()
         setupCancelButton()
         setupSaveButton()
         setupEditViews()
@@ -278,7 +248,7 @@ class ProfileViewController: UIViewController {
             centerSeparatop.bottomAnchor.constraint(equalTo: viewNameBackground.bottomAnchor),
             centerSeparatop.heightAnchor.constraint(equalToConstant: 1.5),
             centerSeparatop.leadingAnchor.constraint(equalTo: viewNameBackground.leadingAnchor, constant: 16),
-            centerSeparatop.trailingAnchor.constraint(equalTo: viewNameBackground.trailingAnchor),
+            centerSeparatop.trailingAnchor.constraint(equalTo: viewNameBackground.trailingAnchor)
         ])
         
         bottomSeparator.isHidden = true
@@ -292,172 +262,6 @@ class ProfileViewController: UIViewController {
         self.cancellables = cancellables
     }
     
-    private func setupChoiceConservationButton() {
-        choiceConservationButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(choiceConservationButton)
-        
-        choiceConservationButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
-        
-        NSLayoutConstraint.activate([
-            choiceConservationButton.heightAnchor.constraint(equalToConstant: 20),
-            choiceConservationButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 17),
-            choiceConservationButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16)
-        ])
-        
-        choiceConservationButton.isHidden = true
-        
-        let saveGCDAction = UIAction(title: "Save GCD", identifier: nil) { [weak self] _ in
-            guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                return
-            }
-            
-            let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
-            self?.profileSaver = profileSaver
-            self?.saveProfileData(profileSaver)
-        }
-        
-        let saveOperationsAction = UIAction(title: "Save Operations", identifier: nil) { [weak self] _ in
-            guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                return
-            }
-            
-            let profileSaver = OperationProfileSaver(profileDirectory: documentsDirectory)
-            self?.profileSaver = profileSaver
-            self?.saveProfileData(profileSaver)
-        }
-        
-        let menu = UIMenu(title: "", options: .displayInline, children: [saveGCDAction, saveOperationsAction])
-        
-        choiceConservationButton.showsMenuAsPrimaryAction = true
-        choiceConservationButton.menu = menu
-    }
-    
-    private func saveProfileData(_ profileSaver: ProfileSaver) {
-        nameTextField.isEnabled = false
-        bioTextField.isEnabled = false
-        
-        choiceConservationButton.isHidden = true
-        activityIndicatorView.startAnimating()
-        
-        isSaving = true
-        sucsessShowAlert = true
-        
-        let isPhotoEdit = isPhotoEdited
-        let isNameEdit = nameLabel.text != nameTextField.text &&
-        !(nameLabel.text == "No name" && nameTextField.text == "")
-        let isBioEdit = descriptionLabel.text != bioTextField.text &&
-        !(descriptionLabel.text == "No bio specified" && bioTextField.text == "")
-        
-        var saveCount = 0
-        
-        if isNameEdit {
-            let savedString = nameTextField.text == "" ? "No name" : nameTextField.text
-            profileSaver.saveUsername(savedString ?? "No name") { [weak self] success in
-                if success {
-                    saveCount += 1
-                    self?.checkSaveCount(saveCount, profileSaver: profileSaver)
-                    print("Username saved successfully")
-                } else {
-                    self?.sucsessShowAlert = false
-                    saveCount += 1
-                    self?.checkSaveCount(saveCount, profileSaver: profileSaver)
-                    print("Failed to save username")
-                }
-            }
-        } else {
-            saveCount += 1
-        }
-        
-        if isBioEdit {
-            let savedString = bioTextField.text == "" ? "No bio specified" : bioTextField.text
-            profileSaver.saveDescription(savedString ?? "No bio specified") { [weak self] success in
-                if success {
-                    saveCount += 1
-                    self?.checkSaveCount(saveCount, profileSaver: profileSaver)
-                    print("Description saved successfully")
-                } else {
-                    self?.sucsessShowAlert = false
-                    saveCount += 1
-                    self?.checkSaveCount(saveCount, profileSaver: profileSaver)
-                    print("Failed to save description")
-                }
-            }
-        } else {
-            saveCount += 1
-        }
-        
-        if isPhotoEdit {
-            if let image = self.profileImageView.image {
-                profileSaver.saveImage(image) { [weak self] success in
-                    if success {
-                        saveCount += 1
-                        self?.checkSaveCount(saveCount, profileSaver: profileSaver)
-                        print("Image saved successfully")
-                    } else {
-                        self?.sucsessShowAlert = false
-                        saveCount += 1
-                        self?.checkSaveCount(saveCount, profileSaver: profileSaver)
-                        print("Failed to save image")
-                    }
-                }
-            } else {
-                print("Profile image is nil")
-            }
-        } else {
-            saveCount += 1
-        }
-        
-        if !isBioEdit && !isNameEdit && !isPhotoEdit {
-            showAlert(profileSaver: profileSaver)
-        }
-    }
-    
-    private func checkSaveCount(_ saveCount: Int, profileSaver: ProfileSaver) {
-        if saveCount == 3 {
-            DispatchQueue.main.async {
-                self.activityIndicatorView.stopAnimating()
-                self.showAlert(profileSaver: profileSaver)
-            }
-        }
-    }
-    
-    private func showAlert(profileSaver: ProfileSaver) {
-        isSaving = false
-        
-        nameTextField.isEnabled = true
-        bioTextField.isEnabled = true
-        
-        choiceConservationButton.isHidden = false
-        activityIndicatorView.stopAnimating()
-        
-        if sucsessShowAlert {
-            let alertController = UIAlertController(title: "Success", message: "You are breathtaking", preferredStyle: .alert)
-            
-            let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
-                self?.disableEditMode()
-            }
-            
-            alertController.addAction(okAction)
-            
-            self.present(alertController, animated: true, completion: nil)
-        } else {
-            let alertController = UIAlertController(title: "Could not save profile", message: "Try again", preferredStyle: .alert)
-            
-            let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
-                self?.disableEditMode()
-            }
-            
-            let tryAgainAction = UIAlertAction(title: "Try Again", style: .default) { [weak self] (_) in
-                self?.saveProfileData(profileSaver)
-            }
-            
-            alertController.addAction(okAction)
-            alertController.addAction(tryAgainAction)
-            
-            self.present(alertController, animated: true, completion: nil)
-        }
-    }
-    
     private func setupSaveButton() {
         view.addSubview(saveButton)
         saveButton.translatesAutoresizingMaskIntoConstraints = false
@@ -468,7 +272,7 @@ class ProfileViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             saveButton.heightAnchor.constraint(equalToConstant: 20),
-            saveButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 17),
+            saveButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
             saveButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16)
         ])
         
@@ -489,10 +293,9 @@ class ProfileViewController: UIViewController {
         cancelButton.setTitleColor(.systemBlue, for: .normal)
         cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         
-        
         NSLayoutConstraint.activate([
             cancelButton.heightAnchor.constraint(equalToConstant: 20),
-            cancelButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 17),
+            cancelButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
             cancelButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16)
         ])
         
@@ -503,102 +306,6 @@ class ProfileViewController: UIViewController {
         )
         
         cancelButton.isHidden = true
-    }
-    
-    @objc private func saveProfileDataButtonTaped() {
-        saveButton.isHidden = true
-        activityIndicatorView.startAnimating()
-        isSaving = true
-        nameTextField.isEnabled = false
-        bioTextField.isEnabled = false
-        addPhotoButton.isEnabled = false
-        
-        let userProfileModel = UserProfileViewModel(
-            userName: nameTextField.text == "" ? "No name" : nameTextField.text,
-            userDescription: bioTextField.text == "" ? "No bio specified" : bioTextField.text,
-            userAvatar: editProfileImageView.image?.pngData()
-        )
-        
-        userProfileDataManager.saveUserProfile(userProfileModel) { [weak self] (isSaved) in
-            if ((self?.isSaving) != nil && self?.isSaving == true) {
-                if isSaved {
-                    let alertController = UIAlertController(title: "Success", message: "You are breathtaking", preferredStyle: .alert)
-                    
-                    let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
-                        self?.disableEditMode()
-                    }
-                    
-                    alertController.addAction(okAction)
-                    
-                    self?.present(alertController, animated: true, completion: nil)
-                } else {
-                    let alertController = UIAlertController(title: "Could not save profile", message: "Try again", preferredStyle: .alert)
-                    
-                    let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
-                        self?.disableEditMode()
-                    }
-                    
-                    let tryAgainAction = UIAlertAction(title: "Try Again", style: .default) { [weak self] (_) in
-                        self?.saveProfileDataButtonTaped()
-                    }
-                    
-                    alertController.addAction(okAction)
-                    alertController.addAction(tryAgainAction)
-                    
-                    self?.present(alertController, animated: true, completion: nil)
-                }
-                
-                self?.saveButton.isHidden = false
-            }
-            self?.activityIndicatorView.stopAnimating()
-            self?.isSaving = false
-            self?.nameTextField.isEnabled = true
-            self?.bioTextField.isEnabled = true
-            self?.addPhotoButton.isEnabled = true
-            
-        }
-    }
-    
-    @objc private func disableEditMode() {
-        if isSaving {
-            //profileSaver?.cancel()
-            userProfileDataManager.cancelSave()
-            activityIndicatorView.stopAnimating()
-            isSaving = false
-            saveButton.isHidden = true
-        }
-        
-        /*guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-         return
-         }
-         
-         let profileSaver = GCDProfileSaver(profileDirectory: documentsDirectory)
-         
-         var userName: String?
-         var userDectription: String?
-         var userAvatar: UIImage?
-         
-         profileSaver.loadUserName { [weak self] name in
-         userName = name
-         
-         profileSaver.loadDescription { [weak self] description in
-         userDectription = description
-         
-         profileSaver.loadImage { [weak self] image in
-         userAvatar = image
-         
-         self?.configure(with: UserProfileViewModel(
-         userName: userName,
-         userDescription: userDectription,
-         userAvatar: userAvatar
-         ))
-         }
-         }
-         }*/
-        
-        isEdittingEnable = false
-        isPhotoEdited = false
-        changeEditEnable()
     }
     
     private func changeTheme(_ theme: [String: UIColor]) {
@@ -614,21 +321,19 @@ class ProfileViewController: UIViewController {
         } else {
             changeTheme(lightTheme)
         }
-        
         self.theme = theme
     }
     
     private func setupTitle() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(titleLabel)
-        
         titleLabel.text = "My Profile"
         titleLabel.textAlignment = .center
         titleLabel.font = .systemFont(ofSize: 17.0, weight: .semibold)
         
         NSLayoutConstraint.activate([
             titleLabel.heightAnchor.constraint(equalToConstant: 20),
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 17),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
@@ -636,15 +341,13 @@ class ProfileViewController: UIViewController {
     private func setupCloseButton() {
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(closeButton)
-        
         closeButton.setTitle("Close", for: .normal)
         closeButton.setTitleColor(.systemBlue, for: .normal)
         closeButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         
-        
         NSLayoutConstraint.activate([
             closeButton.heightAnchor.constraint(equalToConstant: 20),
-            closeButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 17),
+            closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
             closeButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16)
         ])
         
@@ -662,14 +365,13 @@ class ProfileViewController: UIViewController {
     private func setupEditButton() {
         editButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(editButton)
-        
         editButton.setTitle("Edit", for: .normal)
         editButton.setTitleColor(.systemBlue, for: .normal)
         editButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         
         NSLayoutConstraint.activate([
             editButton.heightAnchor.constraint(equalToConstant: 20),
-            editButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 17),
+            editButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
             editButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16)
         ])
         
@@ -680,18 +382,7 @@ class ProfileViewController: UIViewController {
         )
     }
     
-    @objc private func enableEditMode() {
-        if (!isEdittingEnable) {
-            nameTextField.text = nameLabel.text == "No name" ? "" : nameLabel.text
-            bioTextField.text = descriptionLabel.text == "No bio specified" ? "" : descriptionLabel.text
-            editProfileImageView.image = profileImageView.image
-            isEdittingEnable = true
-            changeEditEnable()
-            nameTextField.becomeFirstResponder()
-        }
-    }
-    
-    private func changeEditEnable() {
+    internal func changeEditEnable() {
         if isEdittingEnable {
             titleLabel.text = "Edit Profile"
             view.backgroundColor = theme == Theme.dark ? darkTheme["editBackgroundColor"] : lightTheme["editBackgroundColor"]
@@ -705,7 +396,6 @@ class ProfileViewController: UIViewController {
         descriptionLabel.isHidden = isEdittingEnable
         
         cancelButton.isHidden = !isEdittingEnable
-        //choiceConservationButton.isHidden = !isEdittingEnable
         saveButton.isHidden = !isEdittingEnable
         viewNameBackground.isHidden = !isEdittingEnable
         nameTextField.isHidden = !isEdittingEnable
@@ -730,19 +420,6 @@ class ProfileViewController: UIViewController {
         
         profileImageView.layer.cornerRadius = 75
         profileImageView.clipsToBounds = true
-        
-        initialsLabel.translatesAutoresizingMaskIntoConstraints = false
-        //view.addSubview(initialsLabel)
-        
-        initialsLabel.text = "SJ"
-        initialsLabel.textColor = .white
-        initialsLabel.font = .rounded(ofSize: 64, weight: .medium)
-        initialsLabel.textAlignment = .center
-        
-        /*NSLayoutConstraint.activate([
-         initialsLabel.centerXAnchor.constraint(equalTo: profileImageView.centerXAnchor),
-         initialsLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor)
-         ])*/
     }
     
     private func setupEditProfileImageView() {
@@ -758,14 +435,12 @@ class ProfileViewController: UIViewController {
         
         editProfileImageView.layer.cornerRadius = 75
         editProfileImageView.clipsToBounds = true
-        
         editProfileImageView.isHidden = true
     }
     
     private func setupAddPhotoButton() {
         addPhotoButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addPhotoButton)
-        
         addPhotoButton.setTitle("Add Photo", for: .normal)
         addPhotoButton.setTitleColor(.systemBlue, for: .normal)
         addPhotoButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
@@ -777,92 +452,12 @@ class ProfileViewController: UIViewController {
             addPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         
-        addPhotoButton.addTarget(
-            self,
-            action: #selector(addPhoto),
-            for: .touchUpInside
-        )
-    }
-    
-    private func action(for type: UIImagePickerController.SourceType, title: String) -> UIAlertAction? {
-        guard UIImagePickerController.isSourceTypeAvailable(type) else {
-            return nil
-        }
-        
-        return UIAlertAction(title: title, style: .default) { [unowned self] _ in
-            self.pickerController.sourceType = type
-            if type == .camera {
-                let cameraAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
-                
-                switch cameraAuthorizationStatus {
-                case .authorized:
-                    // Камера доступна
-                    self.present(self.pickerController, animated: true)
-                    
-                case .notDetermined:
-                    // Для запроса доступа к камере
-                    AVCaptureDevice.requestAccess(for: .video) { granted in}
-                    
-                case .restricted, .denied:
-                    // Доступ к камере запрещен
-                    let alertController = UIAlertController(
-                        title: "Доступ к камере запрещен",
-                        message: "Разрешите доступ к камере в настройках приложения",
-                        preferredStyle: .alert
-                    )
-                    
-                    let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
-                    
-                    let openSettingsAction = UIAlertAction(title: "Настройки", style: .default) { (action) in
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                        }
-                    }
-                    
-                    alertController.addAction(cancelAction)
-                    alertController.addAction(openSettingsAction)
-                    
-                    present(alertController, animated: true, completion: nil)
-                @unknown default:
-                    break
-                }
-            }
-            else {
-                self.present(self.pickerController, animated: true)
-            }
-        }
-    }
-    
-    @objc private func addPhoto() {
-        enableEditMode()
-        pickerController.delegate = self
-        pickerController.allowsEditing = true
-        pickerController.mediaTypes = ["public.image"]
-        
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        if let action = self.action(for: .camera, title: "Сделать фото") {
-            alertController.addAction(action)
-        }
-        if let action = self.action(for: .photoLibrary, title: "Выбрать из галереи") {
-            alertController.addAction(action)
-        }
-        
-        alertController.addAction(UIAlertAction(title: "Отмена", style: .cancel, handler: nil))
-        
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            alertController.popoverPresentationController?.sourceView = view
-            alertController.popoverPresentationController?.sourceRect = view.bounds
-            alertController.popoverPresentationController?.permittedArrowDirections = [.down, .up]
-        }
-        
-        present(alertController, animated: true)
+        addPhotoButton.addTarget(self, action: #selector(addPhoto), for: .touchUpInside)
     }
     
     private func setupNameLabel() {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
-        
         nameLabel.numberOfLines = 2
         nameLabel.textAlignment = .center
         nameLabel.font = .systemFont(ofSize: 22.0, weight: .bold)
@@ -878,10 +473,8 @@ class ProfileViewController: UIViewController {
     private func setupDescriptionLabel() {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(descriptionLabel)
-        
         descriptionLabel.textAlignment = .center
         descriptionLabel.font = .systemFont(ofSize: 17, weight: .regular)
-        
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = .byTruncatingTail
         descriptionLabel.sizeToFit()
@@ -893,28 +486,5 @@ class ProfileViewController: UIViewController {
             descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
             descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -20)
         ])
-    }
-}
-
-extension ProfileViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
-    
-    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        dismiss(animated: true, completion: nil)
-    }
-    
-    public func imagePickerController(_ picker: UIImagePickerController,
-                                      didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        guard let image = info[.editedImage] as? UIImage else {
-            dismiss(animated: true, completion: nil)
-            return
-        }
-        
-        editProfileImageView.image = image
-        isPhotoEdited = true
-        
-        initialsLabel.isHidden = true
-        gradient.isHidden = true
-        
-        dismiss(animated: true, completion: nil)
     }
 }

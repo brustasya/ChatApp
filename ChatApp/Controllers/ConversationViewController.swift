@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import Combine
+import TFSChatTransport
 
 enum DaySection: Hashable {
     case yesturday
@@ -18,15 +20,20 @@ class ConversationsViewController: UIViewController {
     private lazy var toolbar = UIView()
     private lazy var nameLabel = UILabel()
     private var toolbarBottomConstraint: NSLayoutConstraint = NSLayoutConstraint()
-    private lazy var messageInputTextView = UITextView()
+    private lazy var messageInputTextView = UITextField()
     private lazy var theme = Theme.light
+    private lazy var sendButton = UIButton()
+    private lazy var channelId = ""
+    private lazy var userId = ""
+    let avatarImageView = UIImageView()
     
     private let lightTheme = [
         "backgroundColor": UIColor.white,
         "tableViewBackgroundColor": UIColor.white,
         "textColor": UIColor.black,
         "navbarBackgroundColor": #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1),
-        "borderColor": UIColor.gray
+        "borderColor": UIColor.gray,
+        "secondaryTextColor": UIColor.gray
     ]
 
     private let darkTheme = [
@@ -34,20 +41,13 @@ class ConversationsViewController: UIViewController {
         "tableViewBackgroundColor": UIColor.black,
         "textColor": UIColor.white,
         "navbarBackgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
-        "borderColor": UIColor.black
+        "borderColor": UIColor.black,
+        "secondaryTextColor": UIColor.systemGray5
     ]
     
-    let messageCellModelsToday = [
-        MessageCellModel(text: "Hellow!", date: Date(), isIncoming: true),
-        MessageCellModel(text: "How are you?", date: Date(), isIncoming: false),
-        MessageCellModel(text: "I'm fine! I'm fine! I'm fine! I'm fine! I'm fine!", date: Date(), isIncoming: true)
-    ]
-    
-    let messageCellModelsYesturday = [
-        MessageCellModel(text: "Hellow!", date: Date(timeIntervalSinceNow: -84400), isIncoming: true),
-        MessageCellModel(text: "Hellow!!", date: Date(timeIntervalSinceNow: -84400), isIncoming: false),
-        MessageCellModel(text: "Hellow!!!", date: Date(timeIntervalSinceNow: -84400), isIncoming: true)
-    ]
+    private var cancellables = Set<AnyCancellable>()
+    private lazy var chatService = ChatService(host: "167.235.86.234", port: 8080)
+    private lazy var messages: [Message] = []
     
     private lazy var customNavigationBar: UINavigationBar = {
         let customNavigationBar = UINavigationBar(
@@ -66,11 +66,10 @@ class ConversationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupToolBar()
+        view.backgroundColor = .white
         setupNavBar()
         setupTableView()
-        applySnapshot(animatingDifferences: false)
+        setupToolBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -80,66 +79,70 @@ class ConversationsViewController: UIViewController {
     }
     
     private func setupToolBar() {
-        toolbar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(toolbar)
         
-        messageInputTextView.layer.cornerRadius = 20
-        messageInputTextView.layer.masksToBounds = true
-        messageInputTextView.layer.borderWidth = 1.0
-        messageInputTextView.layer.borderColor = UIColor.lightGray.cgColor
-        messageInputTextView.font = UIFont.systemFont(ofSize: 16)
-        messageInputTextView.isScrollEnabled = false
-        messageInputTextView.translatesAutoresizingMaskIntoConstraints = false
+        toolbar.layer.cornerRadius = 20
+        toolbar.layer.masksToBounds = true
+        toolbar.layer.borderWidth = 1.0
+        toolbar.layer.borderColor = UIColor.lightGray.cgColor
         
-        let sendButton = UIButton()
+        messageInputTextView.font = UIFont.systemFont(ofSize: 16)
+        messageInputTextView.placeholder = "Type message"
+        messageInputTextView.delegate = self
+       
         let imageConfiguration = UIImage.SymbolConfiguration(scale: .large)
         sendButton.setImage(UIImage(systemName: "arrow.up.circle.fill", withConfiguration: imageConfiguration), for: .normal)
         sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
-        sendButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        toolbarBottomConstraint = toolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25)
-        toolbarBottomConstraint.isActive = true
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow(notification:)),
+            name: UIResponder.keyboardWillShowNotification, object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide(notification:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
         toolbar.addSubview(messageInputTextView)
         toolbar.addSubview(sendButton)
-        NSLayoutConstraint.activate([
-            toolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            toolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            toolbar.heightAnchor.constraint(equalToConstant: 52),
-            
-            messageInputTextView.heightAnchor.constraint(equalToConstant: 36),
-            messageInputTextView.topAnchor.constraint(equalTo: toolbar.topAnchor, constant: 8),
-            messageInputTextView.leadingAnchor.constraint(equalTo: toolbar.leadingAnchor, constant: 8),
-            messageInputTextView.trailingAnchor.constraint(equalTo: toolbar.trailingAnchor, constant: -8),
-            
-            sendButton.heightAnchor.constraint(equalToConstant: 30),
-            sendButton.widthAnchor.constraint(equalToConstant: 30),
-            sendButton.trailingAnchor.constraint(equalTo: messageInputTextView.trailingAnchor, constant: -4),
-            sendButton.centerYAnchor.constraint(equalTo: messageInputTextView.centerYAnchor)
-        ])
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+
+        toolbar.frame = CGRect(x: 8, y: view.frame.height - 72, width: view.frame.width - 16, height: 36)
+        messageInputTextView.frame = CGRect(x: 16, y: 1, width: toolbar.frame.width - 52, height: 34)
+        sendButton.frame = CGRect(x: toolbar.frame.width - 38, y: 3, width: 30, height: 30)
+
+        tableView.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            toolbarBottomConstraint.constant = -keyboardSize.height
-            UIView.animate(withDuration: 0.3) {
-                self.view.layoutIfNeeded()
-            }
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey]
+                                  as? NSValue)?.cgRectValue.size else { return }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.toolbar.frame.origin.y = self.view.frame.size.height - keyboardSize.height - self.toolbar.frame.size.height - 8
+            self.tableView.frame.origin.y = self.view.frame.size.height - keyboardSize.height -
+            self.tableView.frame.size.height
         }
     }
     
     @objc func keyboardWillHide(notification: Notification) {
         UIView.animate(withDuration: 0.3) {
-            self.toolbarBottomConstraint.constant = 0
-            self.view.layoutIfNeeded()
+            self.toolbar.frame.origin.y = self.view.frame.height - 72
+            self.tableView.frame.origin.y = self.customNavigationBar.frame.maxY
         }
     }
     
     @objc func sendButtonTapped() {
-        
+        if messageInputTextView.text != "" {
+            createMessage()
+            messageInputTextView.text = ""
+        }
     }
     
     private func setupNavBar() {
@@ -152,15 +155,15 @@ class ConversationsViewController: UIViewController {
         backButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backButton)
         
-        let avatarImageView = UIImageView()
         avatarImageView.backgroundColor = .gray
         avatarImageView.layer.cornerRadius = 25
         avatarImageView.clipsToBounds = true
+        avatarImageView.image = UIImage(named: "avatar")
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(avatarImageView)
         
-        nameLabel.text = "Jane"
-        nameLabel.font = .systemFont(ofSize: 11)
+        nameLabel.font = .systemFont(ofSize: 10)
+        nameLabel.textAlignment = .center
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         
@@ -176,13 +179,15 @@ class ConversationsViewController: UIViewController {
             avatarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 5)
+            nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 5),
+            nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         ])
     }
     
     @objc private func goBack() {
         navigationController?.navigationBar.isHidden = false
-        navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: false)
 
     }
     
@@ -195,13 +200,51 @@ class ConversationsViewController: UIViewController {
         tableView.separatorColor = .clear
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: customNavigationBar.bottomAnchor),
-            tableView.bottomAnchor.constraint(equalTo: toolbar.topAnchor),
-            
-            view.leadingAnchor.constraint(equalTo: tableView.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor)
-        ])
+        tableView.frame = CGRect(x: 0, y: customNavigationBar.frame.maxY, width: view.frame.width,
+                                 height: view.frame.height - customNavigationBar.frame.maxY - 72)
+        
+        let headerView = tableView.tableHeaderView
+        let footerView = tableView.tableFooterView
+        tableView.tableHeaderView = footerView
+        tableView.tableFooterView = headerView
+        
+    }
+    
+    func loadMessages() {
+        chatService.loadMessages(channelId: channelId)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { result in
+                switch result {
+                case .failure(let error):
+                    print("Load messages failed with error: \(error.localizedDescription)")
+                case .finished:
+                    print("Load messages finished")
+                }
+            }, receiveValue: { [weak self] messages in
+                self?.messages = messages
+                self?.update(with: messages.reversed())
+            })
+            .store(in: &cancellables)
+    }
+    
+    func createMessage() {
+        chatService.sendMessage(text: messageInputTextView.text ?? "", channelId: channelId, userId: userId, userName: "Stasya")
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("Сообщение отправлено")
+                    case .failure(let error):
+                        print("Ошибка отправки сообщения: \(error)")
+                    }
+                },
+                receiveValue: { [weak self] message in
+                    self?.messages.append(message)
+                    self?.update(with: self?.messages.reversed() ?? [])
+                }
+            )
+            .store(in: &cancellables)
     }
     
     private func makeDataSource() -> DataSourceForConversation {
@@ -209,56 +252,78 @@ class ConversationsViewController: UIViewController {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageTableViewCell.reuseIdentifier, for: indexPath) as? MessageTableViewCell else {
                 fatalError("Cannot create MessageCell")
             }
-            cell.configureTheme(with: self?.theme ?? Theme.light)
+            cell.configureTheme(theme: self?.theme ?? Theme.light, userId: self?.userId ?? "")
             cell.configure(with: model)
+            cell.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
             return cell
         }
         return dataSource
     }
     
-    private func applySnapshot(animatingDifferences: Bool = true) {
-        var snapshot = NSDiffableDataSourceSnapshot<DaySection, MessageCellModel>()
-        snapshot.appendSections([.yesturday, .today])
+    func update(with messages: [Message]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Date, MessageCellModel>()
         
-        snapshot.appendItems(messageCellModelsYesturday, toSection: .yesturday)
-        snapshot.appendItems(messageCellModelsToday, toSection: .today)
+        let groupedMessages = Dictionary(grouping: messages, by: { Calendar.current.startOfDay(for: $0.date) })
+        let sortedGroupedMessages = groupedMessages.sorted { $0.key > $1.key }
+        let sectionIdentifiers = sortedGroupedMessages.map { $0.key }
+        snapshot.appendSections(sectionIdentifiers)
         
-        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+        for sectionIdentifier in sectionIdentifiers {
+            let messageCellModels = sortedGroupedMessages.first(where: { $0.key == sectionIdentifier })?.value.map { MessageCellModel(message: $0) } ?? []
+            snapshot.appendItems(messageCellModels, toSection: sectionIdentifier)
+        }
+        
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
     
     private func changeTheme(_ theme: [String: UIColor]) {
         tableView.backgroundColor = theme["tableViewBackgroundColor"]
+        view.backgroundColor = theme["tableViewBackgroundColor"]
         toolbar.backgroundColor = theme["backgroundColor"]
         messageInputTextView.backgroundColor = theme["backgroundColor"]
+        messageInputTextView.textColor = theme["textColor"]
         customNavigationBar.backgroundColor = theme["navbarBackgroundColor"]
         customNavigationBar.layer.borderColor = theme["borderColor"]?.cgColor
         nameLabel.textColor = theme["textColor"]
     }
     
-    func configure(with theme: Theme) {
+    func configure(theme: Theme, channel: Channel, userId: String) {
         self.theme = theme
         if theme == Theme.dark {
             changeTheme(darkTheme)
         } else {
             changeTheme(lightTheme)
         }
+        
+        channelId = channel.id
+
+        loadMessages()
+        
+        self.userId = userId
+        nameLabel.text = channel.name
+        
+        if let logoURL = channel.logoURL,
+           let imageUrl = URL(string: logoURL) {
+            let task = URLSession.shared.dataTask(with: imageUrl) { [weak self] data, _, error in
+                if let error = error {
+                    print("Error loading image: \(error.localizedDescription)")
+                } else if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self?.avatarImageView.image = image
+                    }
+                }
+            }
+            task.resume()
+        }
     }
-    
 }
 
-final class DataSourceForConversation: UITableViewDiffableDataSource<DaySection, MessageCellModel> {
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+final class DataSourceForConversation: UITableViewDiffableDataSource<Date, MessageCellModel> {
+    
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd MMM"
-        
-        switch section {
-        case 0:            
-            return dateFormatter.string(from: Date(timeIntervalSinceNow: -84400))
-        case 1:
-            return dateFormatter.string(from: Date())
-        default:
-            return nil
-        }
+        return dateFormatter.string(from: self.snapshot().sectionIdentifiers[section])
     }
 }
 
@@ -274,11 +339,29 @@ extension ConversationsViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+    func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
         guard let header = view as? UITableViewHeaderFooterView else {
             return
         }
         header.textLabel?.textAlignment = .center
         header.textLabel?.font = .systemFont(ofSize: 11)
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let headerView = UITableViewHeaderFooterView()
+        headerView.transform = CGAffineTransform(rotationAngle: .pi)
+
+        return headerView
+    }
+}
+
+extension ConversationsViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == messageInputTextView {
+            if tableView.numberOfSections != 0 {
+                let indexPath = IndexPath(row: 0, section: 0)
+                tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+            }
+        }
     }
 }

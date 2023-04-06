@@ -18,7 +18,7 @@ extension UIColor {
     
     convenience init?(rgb: String) {
         let str = rgb.filter { $0 != "#" }
-        if (str.count != 6) {
+        if str.count != 6 {
             return nil
         }
         
