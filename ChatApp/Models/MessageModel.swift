@@ -8,9 +8,12 @@
 import UIKit
 import TFSChatTransport
 
-struct MessageCellModel: Hashable {
-    let id = UUID()
-    let message: Message
+struct MessageModel: Hashable {
+    let uuid: UUID
+    let text: String
+    let userID: String
+    let userName: String
+    let date: Date
 }
 
 extension Message: Hashable {

@@ -102,10 +102,10 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
     }
     
     func configure(with model: ChannelModel) {
-        nameLabel.text = model.channel.name == "" ? "No name" : model.channel.name
-        messageLabel.text = model.channel.lastMessage ?? "No messages yet"
+        nameLabel.text = model.name == "" ? "No name" : model.name
+        messageLabel.text = model.lastMessage ?? "No messages yet"
         
-        if let logoURL = model.channel.logoURL,
+        if let logoURL = model.logoURL,
            let imageUrl = URL(string: logoURL) {
             let task = URLSession.shared.dataTask(with: imageUrl) { [weak self] data, _, error in
                 if let error = error {
@@ -126,7 +126,7 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         dateFormatter.dateFormat = "dd MMM"
 
         let now = Date()
-        let lastMessageDate = model.channel.lastActivity ?? Date()
+        let lastMessageDate = model.lastActivity ?? Date()
         let calendar = Calendar.current
         
         if calendar.compare(lastMessageDate, to: now, toGranularity: .day) == .orderedAscending {
@@ -135,7 +135,7 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
             dateLabel.text = timeFormatter.string(from: lastMessageDate)
         }
         
-        if model.channel.lastActivity == nil {
+        if model.lastActivity == nil {
             dateLabel.text = ""
         }
         

@@ -8,7 +8,7 @@ import UIKit
 
 final class MessageTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
-    typealias ConfigurationModel = MessageCellModel
+    typealias ConfigurationModel = MessageModel
     static let reuseIdentifier = "MessageCell"
     
     private lazy var isIncoming = false
@@ -58,21 +58,21 @@ final class MessageTableViewCell: UITableViewCell, ConfigurableViewProtocol {
         self.userId = userId
     }
     
-    func configure(with model: MessageCellModel) {
-        messageLabel.text = model.message.text
+    func configure(with model: MessageModel) {
+        messageLabel.text = model.text
         
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "HH:mm"
         
-        dateLabel.text = timeFormatter.string(from: model.message.date)
-        isIncoming = model.message.userID != self.userId
+        dateLabel.text = timeFormatter.string(from: model.date)
+        isIncoming = model.userID != self.userId
         nameLabel.text = nil
 
         if isIncoming {
             messageLabel.textColor = theme == Theme.dark ? .white : .black
             messageImageView.tintColor = theme == Theme.dark ? UIColor(rgb: "#262628") : UIColor(rgb: "#E9E9EB")
             dateLabel.textColor = theme == Theme.dark ? .systemGray2 : .systemGray
-            nameLabel.text = model.message.userName
+            nameLabel.text = model.userName
         } else {
             messageLabel.textColor = .white
             messageImageView.tintColor = UIColor(rgb: "#448AF7")
@@ -163,7 +163,7 @@ final class MessageTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     private func setupMessageImageView() {
         NSLayoutConstraint.activate([
             messageImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            messageImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            messageImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
             messageImageView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -6),
             messageImageView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -12),
             messageImageView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 60),

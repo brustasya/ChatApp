@@ -8,7 +8,7 @@
 import UIKit
 import TFSChatTransport
 
-extension Channel: Hashable {
+/* extension Channel: Hashable {
     public static func == (lhs: Channel, rhs: Channel) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
@@ -16,9 +16,13 @@ extension Channel: Hashable {
     public func hash(into hasher: inout Hasher) {
         
     }
-}
+} */
 
 struct ChannelModel: Hashable {
-    let id = UUID()
-    let channel: Channel
+    let uuid = UUID()
+    let id: String
+    let name: String
+    let logoURL: String?
+    let lastMessage: String?
+    let lastActivity: Date?
 }

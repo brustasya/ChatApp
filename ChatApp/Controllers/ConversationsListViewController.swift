@@ -29,6 +29,8 @@ class ConversationsListViewController: UIViewController {
     
     private lazy var theme = Theme.light
     
+    private lazy var chatDataSource = ChatDataSource()
+    
     private let lightTheme = [
         "backgroundColor": UIColor.white,
         "textColor": UIColor.black,
@@ -43,9 +45,11 @@ class ConversationsListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.backgroundColor = .white
         setupNavbar()
         setupTableView()
+        
+        channels = chatDataSource.getAllChannels().reversed()
         applySnapshot(animatingDifferences: false)
         
         let userId = UIDevice.current.identifierForVendor?.uuidString
@@ -60,7 +64,7 @@ class ConversationsListViewController: UIViewController {
         }
         
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(loadChannels), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(reload), for: .valueChanged)
         tableView.refreshControl = refreshControl
         
         Logger.shared.printLog(log: "Called method: \(#function)")
@@ -82,26 +86,41 @@ class ConversationsListViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
-        loadChannels()
+        loadChannels(true)
     }
     
-    @objc private func loadChannels() {
+    @objc private func reload() {
+        loadChannels(true)
+    }
+    
+    private func loadChannels(_ isSave: Bool) {
         chatService.loadChannels()
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { [weak self] completion in
                     switch completion {
                     case .finished:
-                        print("Load channels finished")
+                        Logger.shared.printLog(log: "Load channels finished")
                     case .failure(let error):
-                        print("Load channels failed with error: \(error.localizedDescription)")
+                        Logger.shared.printLog(log: "Load channels failed with error: \(error.localizedDescription)")
                     }
                     self?.tableView.refreshControl?.endRefreshing()
                 },
                 receiveValue: { [weak self] channels in
                     self?.channels = channels.reversed().map({ channel in
-                        ChannelModel(channel: channel)
+                        ChannelModel(
+                            id: channel.id,
+                            name: channel.name,
+                            logoURL: channel.logoURL,
+                            lastMessage: channel.lastMessage,
+                            lastActivity: channel.lastActivity
+                        )
                     })
+                    
+                    if isSave {
+                        self?.chatDataSource.saveChannelModels(with: self?.channels ?? [])
+                    }
+                    
                     self?.applySnapshot()
                 }
             )
@@ -154,9 +173,7 @@ class ConversationsListViewController: UIViewController {
             guard let channelName = alertController.textFields?[0].text, !channelName.isEmpty else {
                 return
             }
-            
             self?.createChannel(channelName: channelName)
-            
         }
 
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -172,16 +189,23 @@ class ConversationsListViewController: UIViewController {
         chatService.createChannel(name: channelName)
             .receive(on: DispatchQueue.main)
             .sink { completion in
-                // Обрабатываем завершение паблишера
                 switch completion {
                 case .finished:
-                    print("Channel created successfully")
+                    Logger.shared.printLog(log: "Channel created successfully")
                 case .failure(let error):
-                    print("Channel creation failed with error: \(error.localizedDescription)")
+                    Logger.shared.printLog(log: "Channel creation failed with error: \(error.localizedDescription)")
                 }
             } receiveValue: { [weak self] channel in
-                // Добавляем созданный канал в массив и перезагружаем таблицу
-                self?.channels.append(ChannelModel(channel: channel))
+                let channelModel = ChannelModel(
+                    id: channel.id,
+                    name: channel.name,
+                    logoURL: channel.logoURL,
+                    lastMessage: channel.lastMessage,
+                    lastActivity: channel.lastActivity
+                )
+                self?.channels.append(channelModel)
+                self?.chatDataSource.saveChannelModel(with: channelModel)
+                
                 self?.applySnapshot()
             }
             .store(in: &cancellables)
@@ -214,9 +238,10 @@ class ConversationsListViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        loadChannels(false)
         navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor:
-                                                                                theme == Theme.dark ? UIColor.white : UIColor.black]
+        self.navigationController?.navigationBar.largeTitleTextAttributes =
+        [NSAttributedString.Key.foregroundColor: theme == Theme.dark ? UIColor.white : UIColor.black]
         tabBarController?.tabBar.isHidden = false
         Logger.shared.printLog(log: "Called method: \(#function)")
     }
@@ -261,10 +286,38 @@ extension ConversationsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         45
     }
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+            let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (_, _, completion) in
+                self?.deleteChannel(at: indexPath)
+                completion(true)
+            }
+            
+            return UISwipeActionsConfiguration(actions: [deleteAction])
+        }
+        
+    private func deleteChannel(at indexPath: IndexPath) {
+        let channelId = channels[channels.count - 1 - indexPath.row].id
+        let count = channels.count
+        chatService.deleteChannel(id: channelId)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    Logger.shared.printLog(log: "Канал успешно удален")
+                case .failure(let error):
+                    Logger.shared.printLog(log: "Ошибка при удалении канала: \(error.localizedDescription)")
+                }
+            }, receiveValue: { [weak self] _ in
+                self?.chatDataSource.deleteChannel(with: channelId)
+                self?.channels.remove(at: count - 1 - indexPath.row)
+                self?.applySnapshot(animatingDifferences: true)
+            })
+            .store(in: &cancellables)
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let conversationsViewController = ConversationsViewController()
-        conversationsViewController.configure(theme: theme, channel: channels.reversed()[indexPath.row].channel, userId: userId)
+        conversationsViewController.configure(theme: theme, channel: channels.reversed()[indexPath.row], userId: userId)
         self.navigationController?.pushViewController(conversationsViewController, animated: true)
         tabBarController?.tabBar.isHidden = true
         tableView.deselectRow(at: indexPath, animated: true)

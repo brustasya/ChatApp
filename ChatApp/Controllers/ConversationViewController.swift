@@ -26,6 +26,7 @@ class ConversationsViewController: UIViewController {
     private lazy var channelId = ""
     private lazy var userId = ""
     let avatarImageView = UIImageView()
+    private lazy var userName = "No name"
     
     private let lightTheme = [
         "backgroundColor": UIColor.white,
@@ -47,7 +48,11 @@ class ConversationsViewController: UIViewController {
     
     private var cancellables = Set<AnyCancellable>()
     private lazy var chatService = ChatService(host: "167.235.86.234", port: 8080)
-    private lazy var messages: [Message] = []
+    private lazy var messages: [MessageModel] = []
+    private lazy var userProfileDataManager = UserProfileDataManager()
+    private var cancellable: AnyCancellable?
+    private lazy var chatDataSource = ChatDataSource()
+    private var channelModel: ChannelModel?
     
     private lazy var customNavigationBar: UINavigationBar = {
         let customNavigationBar = UINavigationBar(
@@ -67,6 +72,13 @@ class ConversationsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
+        cancellable = userProfileDataManager.loadUserProfile().sink(receiveValue: { [weak self] userProfile in
+            if let userProfile = userProfile {
+                self?.userName = userProfile.userName ?? "No name"
+            }
+        })
+        
         setupNavBar()
         setupTableView()
         setupToolBar()
@@ -221,14 +233,21 @@ class ConversationsViewController: UIViewController {
                     print("Load messages finished")
                 }
             }, receiveValue: { [weak self] messages in
-                self?.messages = messages
-                self?.update(with: messages.reversed())
+                self?.messages = messages.map {
+                    MessageModel(uuid: UUID(), text: $0.text, userID: $0.userID, userName: $0.userName, date: $0.date)
+                }
+                self?.update(with: self?.messages.reversed() ?? [])
+                self?.chatDataSource.saveMessagesModels(
+                    with: self?.messages ?? [],
+                    in: self?.channelModel ?? ChannelModel(
+                        id: UUID().uuidString, name: "No name", logoURL: nil, lastMessage: nil, lastActivity: nil
+                    ))
             })
             .store(in: &cancellables)
     }
     
     func createMessage() {
-        chatService.sendMessage(text: messageInputTextView.text ?? "", channelId: channelId, userId: userId, userName: "Stasya")
+        chatService.sendMessage(text: messageInputTextView.text ?? "", channelId: channelId, userId: userId, userName: userName)
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { completion in
@@ -240,8 +259,22 @@ class ConversationsViewController: UIViewController {
                     }
                 },
                 receiveValue: { [weak self] message in
-                    self?.messages.append(message)
+                    let messageModel = MessageModel(
+                        uuid: UUID(),
+                        text: message.text,
+                        userID: message.userID,
+                        userName: message.userName,
+                        date: message.date
+                    )
+                    self?.messages.append(messageModel)
                     self?.update(with: self?.messages.reversed() ?? [])
+                    
+                    self?.chatDataSource.saveMessageModel(with: messageModel, in: self?.channelModel ?? ChannelModel(
+                        id: UUID().uuidString,
+                        name: "No name",
+                        logoURL: nil,
+                        lastMessage: nil,
+                        lastActivity: nil))
                 }
             )
             .store(in: &cancellables)
@@ -260,8 +293,8 @@ class ConversationsViewController: UIViewController {
         return dataSource
     }
     
-    func update(with messages: [Message]) {
-        var snapshot = NSDiffableDataSourceSnapshot<Date, MessageCellModel>()
+    func update(with messages: [MessageModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Date, MessageModel>()
         
         let groupedMessages = Dictionary(grouping: messages, by: { Calendar.current.startOfDay(for: $0.date) })
         let sortedGroupedMessages = groupedMessages.sorted { $0.key > $1.key }
@@ -269,7 +302,7 @@ class ConversationsViewController: UIViewController {
         snapshot.appendSections(sectionIdentifiers)
         
         for sectionIdentifier in sectionIdentifiers {
-            let messageCellModels = sortedGroupedMessages.first(where: { $0.key == sectionIdentifier })?.value.map { MessageCellModel(message: $0) } ?? []
+            let messageCellModels = sortedGroupedMessages.first(where: { $0.key == sectionIdentifier })?.value ?? []
             snapshot.appendItems(messageCellModels, toSection: sectionIdentifier)
         }
         
@@ -287,7 +320,9 @@ class ConversationsViewController: UIViewController {
         nameLabel.textColor = theme["textColor"]
     }
     
-    func configure(theme: Theme, channel: Channel, userId: String) {
+    func configure(theme: Theme, channel: ChannelModel, userId: String) {
+        update(with: chatDataSource.getMessages(for: channel.id).reversed())
+        
         self.theme = theme
         if theme == Theme.dark {
             changeTheme(darkTheme)
@@ -295,8 +330,9 @@ class ConversationsViewController: UIViewController {
             changeTheme(lightTheme)
         }
         
+        self.channelModel = channel
         channelId = channel.id
-
+        
         loadMessages()
         
         self.userId = userId
@@ -318,7 +354,7 @@ class ConversationsViewController: UIViewController {
     }
 }
 
-final class DataSourceForConversation: UITableViewDiffableDataSource<Date, MessageCellModel> {
+final class DataSourceForConversation: UITableViewDiffableDataSource<Date, MessageModel> {
     
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         let dateFormatter = DateFormatter()

@@ -15,8 +15,8 @@ class Logger: LoggerLogic {
     static let shared = Logger()
     
     func printLog(log: String) {
-        #if DEBUG
+        if CommandLine.arguments.contains("-logs-enabled") {
             print(log)
-        #endif
+        }
     }
 }
