@@ -180,12 +180,8 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        contentView.backgroundColor = theme == Theme.dark ? #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1) : .white
-        nameLabel.textColor = theme == Theme.dark ? .white : .black
-        dateLabel.textColor = theme == Theme.dark ? .systemGray5 : .gray
-        disclosureImageView.tintColor = theme == Theme.dark ? .systemGray5 : .lightGray
+        configureTheme(with: theme)
         avatarImageView.image = UIImage(named: "avatar")
-        messageLabel.textColor = theme == Theme.dark ? .white : .gray
     }
     
     func configureTheme(with theme: Theme) {
