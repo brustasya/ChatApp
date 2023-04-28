@@ -182,6 +182,7 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         super.prepareForReuse()
         configureTheme(with: theme)
         avatarImageView.image = UIImage(named: "avatar")
+        messageLabel.text = nil
     }
     
     func configureTheme(with theme: Theme) {
@@ -193,4 +194,11 @@ class ConversationCell: UITableViewCell, ConfigurableViewProtocol {
         disclosureImageView.tintColor = theme == Theme.dark ? .systemGray5 : .lightGray
     }
     
+}
+
+extension URL {
+    var isImage: Bool {
+        let imageExtensions = ["jpg", "jpeg", "png", "gif"]
+        return imageExtensions.contains(self.pathExtension.lowercased())
+    }
 }

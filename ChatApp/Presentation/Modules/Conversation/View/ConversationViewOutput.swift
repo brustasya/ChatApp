@@ -10,4 +10,7 @@ import Foundation
 protocol ConversationViewOutput: AnyObject {
     func viewIsReady()
     func sendMessage(with text: String)
+    func photoButtonTapped()
+    func presentImages(with delegate: ImageSelectionDelegate?)
+    func addMessage(with cell: MessageTableViewCell, model: MessageModel)
 }

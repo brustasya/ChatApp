@@ -6,6 +6,8 @@
 //
 import UIKit
 
+// Все комментарии - это попытки отобразить картинки)))
+
 final class MessageTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
     typealias ConfigurationModel = MessageModel
@@ -15,10 +17,12 @@ final class MessageTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     private lazy var userId = ""
     private lazy var messageImageView = UIImageView()
     
-    private var incomingFirstConstraint: NSLayoutConstraint?
-    private var incomingSecondConstraint: NSLayoutConstraint?
-    private var outgoingFirstConstraint: NSLayoutConstraint?
-    private var outgoingSecondConstraint: NSLayoutConstraint?
+    private var incomingConstraint: NSLayoutConstraint?
+    private var outgoingConstraint: NSLayoutConstraint?
+    private var imageIncomingConstraint: NSLayoutConstraint?
+    private var imageOutgoingConstraint: NSLayoutConstraint?
+    private var imageTopConstraint: NSLayoutConstraint?
+    private var imageBottomConstraint: NSLayoutConstraint?
     private lazy var theme = Theme.light
     
     private lazy var messageLabel: UILabel = {
@@ -44,6 +48,16 @@ final class MessageTableViewCell: UITableViewCell, ConfigurableViewProtocol {
         return label
     }()
     
+    private lazy var imageDateLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .systemGray
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 11)
+        label.textColor = .systemGray
+        
+        return label
+    }()
+    
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray
@@ -53,42 +67,77 @@ final class MessageTableViewCell: UITableViewCell, ConfigurableViewProtocol {
         return label
     }()
     
+    private lazy var imageNameLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .systemGray
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 11)
+        
+        return label
+    }()
+    
+    private lazy var imageMessageImageView = {
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 5
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return imageView
+    }()
+    
     func configureTheme(theme: Theme, userId: String) {
         self.theme = theme
         self.userId = userId
     }
     
     func configure(with model: MessageModel) {
-        messageLabel.text = model.text
-        
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "HH:mm"
         
         dateLabel.text = timeFormatter.string(from: model.date)
         isIncoming = model.userID != self.userId
-        nameLabel.text = nil
-
-        if isIncoming {
-            messageLabel.textColor = theme == Theme.dark ? .white : .black
-            messageImageView.tintColor = theme == Theme.dark ? UIColor(rgb: "#262628") : UIColor(rgb: "#E9E9EB")
-            dateLabel.textColor = theme == Theme.dark ? .systemGray2 : .systemGray
-            nameLabel.text = model.userName
-        } else {
-            messageLabel.textColor = .white
-            messageImageView.tintColor = UIColor(rgb: "#448AF7")
-            dateLabel.textColor = .systemGray3
-        }
-        
-        guard let image = UIImage(named: isIncoming ? theme == Theme.dark ? "darkReceived" : "received" : "sent") else { return }
-        messageImageView.image = image.resizableImage(
-            withCapInsets: UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20),
-            resizingMode: .stretch
-        ).withRenderingMode(.alwaysTemplate)
+        nameLabel.text = model.userName
+        nameLabel.textColor = theme == Theme.dark ? .systemGray2 : .systemGray
         
         contentView.backgroundColor = theme == Theme.dark ? .black : .white
+        messageLabel.text = model.text
         
-        setupMessagesConstraints()
+        setupTextMessage()
     }
+    
+    /*
+    func configure(with model: MessageModel, data: Data) {
+        imageMessageImageView.image = UIImage(data: data)
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "HH:mm"
+        
+        imageDateLabel.text = timeFormatter.string(from: model.date)
+        isIncoming = model.userID != self.userId
+        imageNameLabel.text = model.userName
+        imageNameLabel.textColor = theme == Theme.dark ? .systemGray2 : .systemGray
+        imageDateLabel.textColor = theme == Theme.dark ? .systemGray2 : .systemGray
+        setupMessagesConstraints()
+        
+        contentView.addSubview(imageMessageImageView)
+        
+        imageIncomingConstraint = imageMessageImageView
+        .leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15)
+        imageOutgoingConstraint = imageMessageImageView
+        .trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
+        imageTopConstraint = imageMessageImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12)
+        imageBottomConstraint = imageMessageImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
+        
+        NSLayoutConstraint.activate([
+            imageMessageImageView.heightAnchor.constraint(equalToConstant: 129),
+            imageMessageImageView.widthAnchor.constraint(equalToConstant: 129)
+           // imageMessageImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12)
+           // imageMessageImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
+        ])
+        
+        setupImagesConstraints()
+    }
+    */
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -101,88 +150,158 @@ final class MessageTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     }
     
     private func setupUI() {
-        contentView.addSubview(messageLabel)
-        if isIncoming {
-            messageImageView.tintColor = UIColor(rgb: "#E9E9EB")
-        } else {
-            messageImageView.tintColor = UIColor(rgb: "#448AF7")
-        }
-        
-        guard let image = UIImage(named: isIncoming ? "received" : "sent") else { return }
-        
-        messageImageView.addSubview(messageLabel)
+        guard let image = UIImage(named: isIncoming ? theme == Theme.dark ? "darkReceived" : "received" : "sent") else { return }
         messageImageView.image = image.resizableImage(
             withCapInsets: UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20),
-            resizingMode: .stretch).withRenderingMode(.alwaysTemplate)
-        
-        messageImageView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(messageImageView)
+            resizingMode: .stretch
+        ).withRenderingMode(.alwaysTemplate)
         contentView.addSubview(messageLabel)
-        contentView.addSubview(dateLabel)
+
+        messageImageView.addSubview(messageLabel)
+        messageImageView.image = image
+        messageImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        incomingFirstConstraint = messageImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15)
-        incomingSecondConstraint = messageImageView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -85)
-        outgoingFirstConstraint = messageImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
-        outgoingSecondConstraint = messageImageView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 85)
-        
+        incomingConstraint = messageImageView
+        .leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15)
+        outgoingConstraint = messageImageView
+        .trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
+                
         setupMessageImageView()
-        setupMessageLabel()
         setupDateLabel()
         setupNameLabel()
+        messageImageView.isHidden = true
     }
+    
+    private func setupTextMessage() {
+        messageLabel.isHidden = false
+        messageImageView.isHidden = false
+        imageMessageImageView.isHidden = true
+
+        if isIncoming {
+            messageLabel.textColor = theme == Theme.dark ? .white : .black
+            messageImageView.tintColor = theme == Theme.dark ? UIColor(rgb: "#262628") : UIColor(rgb: "#E9E9EB")
+            dateLabel.textColor = theme == Theme.dark ? .systemGray2 : .systemGray
+        } else {
+            messageLabel.textColor = .white
+            messageImageView.tintColor = UIColor(rgb: "#448AF7")
+            dateLabel.textColor = .systemGray3
+            nameLabel.text = nil
+        }
+        
+        guard let image = UIImage(named: isIncoming ? theme == Theme.dark ? "darkReceived" : "received" : "sent") else { return }
+        messageImageView.image = image.resizableImage(
+            withCapInsets: UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20),
+            resizingMode: .stretch
+        ).withRenderingMode(.alwaysTemplate)
+        
+        setupMessagesConstraints()
+    }
+    
+    /*
+    private func setupImageMessage() {
+        imageMessageImageView.isHidden = false
+        messageImageView.isHidden = true
+        messageLabel.isHidden = true
+        dateLabel.textColor = theme == Theme.dark ? .systemGray2 : .systemGray
+        contentView.addSubview(imageMessageImageView)
+        contentView.addSubview(dateLabel)
+        
+        NSLayoutConstraint.activate([
+            imageMessageImageView.heightAnchor.constraint(equalToConstant: 129),
+            imageMessageImageView.widthAnchor.constraint(equalToConstant: 129),
+            imageMessageImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            imageMessageImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            dateLabel.topAnchor.constraint(equalTo: imageMessageImageView.bottomAnchor, constant: 2)
+        ])
+        
+        if isIncoming {
+            contentView.addSubview(nameLabel)
+
+            NSLayoutConstraint.activate([
+                imageMessageImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+                dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+                nameLabel.bottomAnchor.constraint(equalTo: imageMessageImageView.topAnchor, constant: -1),
+                nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30)
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                imageMessageImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+                dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
+            ])
+        }
+    }
+    */
     
     private func setupNameLabel() {
         contentView.addSubview(nameLabel)
+     //   contentView.addSubview(imageNameLabel)
+        
         NSLayoutConstraint.activate([
             nameLabel.bottomAnchor.constraint(equalTo: messageImageView.topAnchor, constant: -1),
             nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30)
+            
+           // imageNameLabel.bottomAnchor.constraint(equalTo: imageMessageImageView.topAnchor, constant: -1),
+            // imageNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30)
         ])
     }
     
     private func setupDateLabel() {
+        contentView.addSubview(dateLabel)
+      //  contentView.addSubview(imageDateLabel)
+        
         NSLayoutConstraint.activate([
             dateLabel.bottomAnchor.constraint(equalTo: messageImageView.bottomAnchor, constant: -6),
             dateLabel.trailingAnchor.constraint(equalTo: messageImageView.trailingAnchor, constant: -15)
+            
+          //  imageDateLabel.trailingAnchor.constraint(equalTo: imageMessageImageView.trailingAnchor),
+            // imageDateLabel.topAnchor.constraint(equalTo: imageMessageImageView.bottomAnchor, constant: 2)
         ])
     }
     
     private func setupMessagesConstraints() {
-        if isIncoming {
-            incomingFirstConstraint?.isActive = true
-            incomingSecondConstraint?.isActive = true
-            outgoingFirstConstraint?.isActive = false
-            outgoingSecondConstraint?.isActive = false
-        } else {
-            incomingFirstConstraint?.isActive = false
-            incomingSecondConstraint?.isActive = false
-            outgoingFirstConstraint?.isActive = true
-            outgoingSecondConstraint?.isActive = true
-        }
+        incomingConstraint?.isActive = isIncoming
+        outgoingConstraint?.isActive = !isIncoming
     }
     
+    /*
+    private func setupImagesConstraints() {
+        imageIncomingConstraint?.isActive = isIncoming
+        imageOutgoingConstraint?.isActive = !isIncoming
+        imageTopConstraint?.isActive = true
+        imageBottomConstraint?.isActive = true
+    }
+    */
+    
     private func setupMessageImageView() {
+        contentView.addSubview(messageImageView)
+       // contentView.addSubview(imageMessageImageView)
+        
         NSLayoutConstraint.activate([
             messageImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             messageImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            messageImageView.widthAnchor.constraint(lessThanOrEqualToConstant: contentView.frame.width * 3 / 4),
             messageImageView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -6),
             messageImageView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -12),
-            messageImageView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 60),
+            messageImageView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 50),
             messageImageView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 6)
+            
+            /* imageMessageImageView.heightAnchor.constraint(equalToConstant: 129),
+            imageMessageImageView.widthAnchor.constraint(equalToConstant: 129),
+            imageMessageImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            imageMessageImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20) */
         ])
         
         setupMessagesConstraints()
     }
     
-    private func setupMessageLabel() {
-        NSLayoutConstraint.activate([
-            messageLabel.centerXAnchor.constraint(equalTo: messageImageView.centerXAnchor),
-            messageLabel.centerYAnchor.constraint(equalTo: messageImageView.centerYAnchor)
-        ])
-        
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         nameLabel.text = nil
+        incomingConstraint?.isActive = false
+        outgoingConstraint?.isActive = false
+       /* imageIncomingConstraint?.isActive = false
+        imageOutgoingConstraint?.isActive = false
+        imageTopConstraint?.isActive = false
+        imageBottomConstraint?.isActive = false */
     }
 }

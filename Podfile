@@ -6,6 +6,6 @@ target 'ChatApp' do
   use_frameworks!
 
   # Pods for ChatApp
-  pod 'TFSChatTransport' 
+  pod 'TFSChatTransport'
   pod 'SwiftLint'
 end

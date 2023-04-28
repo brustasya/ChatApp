@@ -156,8 +156,6 @@ class ConversationsListViewController: UIViewController {
     }
 }
 
-final class DataSource: UITableViewDiffableDataSource<Section, ChannelModel> { }
-
 // MARK: - UITableViewDelegate
 
 extension ConversationsListViewController: UITableViewDelegate {

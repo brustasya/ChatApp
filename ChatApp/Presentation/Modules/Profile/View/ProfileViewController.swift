@@ -313,6 +313,7 @@ class ProfileViewController: UIViewController {
         
         profileImageView.layer.cornerRadius = 75
         profileImageView.clipsToBounds = true
+        profileImageView.contentMode = .scaleAspectFill
     }
     
     private func setupEditProfileImageView() {
@@ -329,6 +330,7 @@ class ProfileViewController: UIViewController {
         editProfileImageView.layer.cornerRadius = 75
         editProfileImageView.clipsToBounds = true
         editProfileImageView.isHidden = true
+        editProfileImageView.contentMode = .scaleAspectFill
     }
     
     private func setupAddPhotoButton() {

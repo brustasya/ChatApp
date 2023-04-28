@@ -14,4 +14,5 @@ protocol ProfileViewOutput: AnyObject {
     func addPhotoButtonTapped()
     func cancelButtonTapped()
     func editButtonTapped()
+    func presentImages(with delegate: ImageSelectionDelegate?)
 }

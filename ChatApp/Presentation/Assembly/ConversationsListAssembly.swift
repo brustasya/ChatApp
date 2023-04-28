@@ -18,7 +18,8 @@ final class ConversationsListAssembly {
         let presenter = ConversationsListPresenter(
             chatService: serviceAssembly.makeChatService(),
             chatDataService: serviceAssembly.makeChatDataService(),
-            moduleOutput: moduleOutput
+            moduleOutput: moduleOutput,
+            sseService: serviceAssembly.makeSSEService()
         )
         let vc = ConversationsListViewController(output: presenter)
         presenter.viewInput = vc

@@ -101,6 +101,9 @@ extension ProfileViewController: ProfileViewInput {
         descriptionLabel.text = profileModel.userDescription ?? "No bio specified"
         bioTextField.text = profileModel.userDescription ?? ""
         
+        if nameTextField.text == "No name" { nameTextField.text = "" }
+        if bioTextField.text == "No bio specified" { bioTextField.text = "" }
+        
         if let imageData = profileModel.userAvatar {
             profileImageView.image = UIImage(data: imageData)
             editProfileImageView.image = UIImage(data: imageData)
@@ -206,6 +209,10 @@ extension ProfileViewController: ProfileViewInput {
             alertController.addAction(action)
         }
         
+        alertController.addAction(UIAlertAction(title: "Загрузить", style: .default, handler: { [weak self] (_) in
+            self?.output.presentImages(with: self)
+        }))
+        
         alertController.addAction(UIAlertAction(title: "Отмена", style: .cancel, handler: nil))
         
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -215,5 +222,11 @@ extension ProfileViewController: ProfileViewInput {
         }
         
         present(alertController, animated: true)
+    }
+}
+
+extension ProfileViewController: ImageSelectionDelegate {
+    func imageSelection(didSelectImage data: Data, url: String) {
+        editProfileImageView.image = UIImage(data: data)
     }
 }

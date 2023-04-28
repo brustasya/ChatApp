@@ -18,6 +18,7 @@ class ConversationsViewController: UIViewController {
     private lazy var nameLabel = UILabel()
     private lazy var messageInputTextView = UITextField()
     private lazy var sendButton = UIButton()
+    private lazy var photoButton = UIButton()
     let avatarImageView = UIImageView()
     
     private let lightTheme = [
@@ -94,6 +95,10 @@ class ConversationsViewController: UIViewController {
         let imageConfiguration = UIImage.SymbolConfiguration(scale: .large)
         sendButton.setImage(UIImage(systemName: "arrow.up.circle.fill", withConfiguration: imageConfiguration), for: .normal)
         sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
+        
+        let imageConfigurationPhoto = UIImage.SymbolConfiguration(scale: .medium)
+        photoButton.setImage(UIImage(systemName: "camera", withConfiguration: imageConfigurationPhoto), for: .normal)
+        photoButton.addTarget(self, action: #selector(sendImage), for: .touchUpInside)
 
         NotificationCenter.default.addObserver(
             self,
@@ -113,10 +118,12 @@ class ConversationsViewController: UIViewController {
         
         toolbar.addSubview(messageInputTextView)
         toolbar.addSubview(sendButton)
+        view.addSubview(photoButton)
 
-        toolbar.frame = CGRect(x: 8, y: view.frame.height - 72, width: view.frame.width - 16, height: 36)
+        toolbar.frame = CGRect(x: 44, y: view.frame.height - 72, width: view.frame.width - 54, height: 36)
         messageInputTextView.frame = CGRect(x: 16, y: 1, width: toolbar.frame.width - 52, height: 34)
         sendButton.frame = CGRect(x: toolbar.frame.width - 38, y: 3, width: 30, height: 30)
+        photoButton.frame = CGRect(x: 8, y: view.frame.height - 72, width: 30, height: 30)
 
         tableView.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
     }
@@ -127,6 +134,7 @@ class ConversationsViewController: UIViewController {
         
         UIView.animate(withDuration: 0.3) {
             self.toolbar.frame.origin.y = self.view.frame.size.height - keyboardSize.height - self.toolbar.frame.size.height - 8
+            self.photoButton.frame.origin.y = self.view.frame.size.height - keyboardSize.height - self.toolbar.frame.size.height - 8
             self.tableView.frame.origin.y = self.view.frame.size.height - keyboardSize.height -
             self.tableView.frame.size.height
         }
@@ -135,12 +143,17 @@ class ConversationsViewController: UIViewController {
     @objc func keyboardWillHide(notification: Notification) {
         UIView.animate(withDuration: 0.3) {
             self.toolbar.frame.origin.y = self.view.frame.height - 72
+            self.photoButton.frame.origin.y = self.view.frame.height - 72
             self.tableView.frame.origin.y = self.customNavigationBar.frame.maxY
         }
     }
     
     @objc func sendButtonTapped() {
         output.sendMessage(with: messageInputTextView.text ?? "")
+    }
+    
+    @objc func sendImage() {
+        output.photoButtonTapped()
     }
     
     private func setupNavBar() {
@@ -186,7 +199,6 @@ class ConversationsViewController: UIViewController {
     @objc private func goBack() {
         navigationController?.navigationBar.isHidden = false
         navigationController?.popViewController(animated: false)
-
     }
     
     private func setupTableView() {
@@ -210,24 +222,18 @@ class ConversationsViewController: UIViewController {
     
     private func makeDataSource() -> DataSourceForConversation {
         let dataSource = DataSourceForConversation(tableView: tableView) { [weak self] tableView, indexPath, model in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageTableViewCell.reuseIdentifier, for: indexPath) as? MessageTableViewCell else {
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: MessageTableViewCell.reuseIdentifier, for: indexPath) as? MessageTableViewCell else {
                 fatalError("Cannot create MessageCell")
             }
+
             cell.configureTheme(theme: self?.theme ?? Theme.light, userId: self?.userId ?? "")
             cell.configure(with: model)
+            // self?.output.addMessage(with: cell, model: model)
             cell.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
             return cell
         }
         return dataSource
-    }
-}
-
-final class DataSourceForConversation: UITableViewDiffableDataSource<Date, MessageModel> {
-    
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd MMM"
-        return dateFormatter.string(from: self.snapshot().sectionIdentifiers[section])
     }
 }
 
@@ -270,6 +276,12 @@ extension ConversationsViewController: UITextFieldDelegate {
     }
 }
 
+extension ConversationsViewController: ImageSelectionDelegate {
+    func imageSelection(didSelectImage data: Data, url: String) {
+        output.sendMessage(with: url)
+    }
+}
+
 extension ConversationsViewController: ConversationViewInput {
     func update(with messages: [MessageModel]) {
         var snapshot = NSDiffableDataSourceSnapshot<Date, MessageModel>()
@@ -305,24 +317,34 @@ extension ConversationsViewController: ConversationViewInput {
         messageInputTextView.text = ""
     }
     
+    func reloadTable() {
+        tableView.reloadData()
+    }
+    
     func setupUserId(userId: String) {
         self.userId = userId
     }
     
-    func setupNavigationBarContent(logoURL: String, name: String) {
+    func setupNavigationBarContent(logoURL: Data, name: String) {
         nameLabel.text = name
+        avatarImageView.image = UIImage(data: logoURL)
+    }
+    
+    func showAlert() {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        if let imageUrl = URL(string: logoURL) {
-            let task = URLSession.shared.dataTask(with: imageUrl) { [weak self] data, _, error in
-                if let error = error {
-                    print("Error loading image: \(error.localizedDescription)")
-                } else if let data = data, let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self?.avatarImageView.image = image
-                    }
-                }
-            }
-            task.resume()
+        alertController.addAction(UIAlertAction(title: "Загрузить", style: .default, handler: { [weak self] (_) in
+            self?.output.presentImages(with: self)
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "Отмена", style: .cancel, handler: nil))
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            alertController.popoverPresentationController?.sourceView = view
+            alertController.popoverPresentationController?.sourceRect = view.bounds
+            alertController.popoverPresentationController?.permittedArrowDirections = [.down, .up]
         }
+        
+        present(alertController, animated: true)
     }
 }

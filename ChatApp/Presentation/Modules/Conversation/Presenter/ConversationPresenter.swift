@@ -11,9 +11,13 @@ import Combine
 
 final class ConversationPresenter {
     weak var viewInput: ConversationViewInput?
+    weak var moduleOutput: ConversationModuleOutput?
+    
     private let chatService: ChatService
     private let chatDataService: ChatDataSourceProtocol
     private let profileService: UserProfileDataServiceProtocol
+    private let sseService: SSEService
+    private let imageService: ImageServiceProtocol
     
     private var cancellables = Set<AnyCancellable>()
     private var cancellable: AnyCancellable?
@@ -27,14 +31,41 @@ final class ConversationPresenter {
         chatService: ChatService,
         chatDataService: ChatDataSourceProtocol,
         profileService: UserProfileDataServiceProtocol,
-        channelModel: ChannelModel
+        channelModel: ChannelModel,
+        sseService: SSEService,
+        mouleOutput: ConversationModuleOutput,
+        imageService: ImageServiceProtocol
     ) {
         self.chatService = chatService
         self.chatDataService = chatDataService
         self.profileService = profileService
         self.channelModel = channelModel
+        self.sseService = sseService
+        self.moduleOutput = mouleOutput
+        self.imageService = imageService
         
         userId = UserService.shared.getUserId()
+    }
+    
+    private func sseUpdate() {
+        sseService.subscribeOnEvents()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("Subscription finished")
+                    case .failure(let error):
+                        print("Subscription failed with error: \(error)")
+                    }
+                },
+                receiveValue: {[weak self] chatEvent in
+                    if chatEvent.eventType == .update &&
+                        chatEvent.resourceID == self?.channelModel.id {
+                        self?.loadMessages()
+                    }
+                })
+            .store(in: &cancellables)
     }
     
     private func getUserName() {
@@ -83,30 +114,49 @@ final class ConversationPresenter {
                         print("Ошибка отправки сообщения: \(error)")
                     }
                 },
-                receiveValue: { [weak self] message in
-                    let messageModel = MessageModel(
-                        uuid: UUID(),
-                        text: message.text,
-                        userID: message.userID,
-                        userName: message.userName,
-                        date: message.date
-                    )
-                    self?.messages.append(messageModel)
-                    self?.viewInput?.update(with: self?.messages.reversed() ?? [])
-                    
-                    self?.chatDataService.saveMessageModel(with: messageModel, in: self?.channelModel ?? ChannelModel(
-                        id: UUID().uuidString,
-                        name: "No name",
-                        logoURL: nil,
-                        lastMessage: nil,
-                        lastActivity: nil))
-                }
-            )
+                receiveValue: { _ in })
             .store(in: &cancellables)
     }
     
     private func getMesssages() {
         self.viewInput?.update(with: chatDataService.getMessages(for: channelModel.id).reversed())
+    }
+    
+    /*
+    private func configureCell(with cell: MessageTableViewCell, model: MessageModel) {
+        var imageData: Data?
+        imageService.loadImageData(from: model.text) { result in
+            switch result {
+            case .success(let data):
+                imageData = data
+            case .failure(let error):
+                Logger.shared.printLog(log: "Error loading image: \(error.localizedDescription)")
+            }
+            DispatchQueue.main.async {
+                if imageData != nil {
+                    cell.configure(with: model)
+                } else {
+                    cell.configure(with: model)
+                }
+            }
+        }
+    }
+    */
+    
+    private func setupNavBar() {
+        imageService.loadImageData(from: channelModel.logoURL ?? "") { [weak self] result in
+            switch result {
+            case .success(let data):
+                DispatchQueue.main.async {
+                    self?.viewInput?.setupNavigationBarContent(logoURL: data, name: self?.channelModel.name ?? "No name")
+                }
+            case .failure(let error):
+                self?.viewInput?.setupNavigationBarContent(
+                    logoURL: UIImage(named: "avatar")?.pngData() ?? Data(), name: self?.channelModel.name ?? "No name"
+                )
+                Logger.shared.printLog(log: "Error loading image: \(error.localizedDescription)")
+            }
+        }
     }
 }
 
@@ -114,12 +164,12 @@ extension ConversationPresenter: ConversationViewOutput {
     func viewIsReady() {
         let theme = ThemeService.shared.getTheme()
         viewInput?.changeTheme(theme)
-        viewInput?.setupNavigationBarContent(logoURL: channelModel.logoURL ?? "", name: channelModel.name)
         viewInput?.setupUserId(userId: userId)
-        
+        setupNavBar()
         getMesssages()
         loadMessages()
         getUserName()
+        sseUpdate()
     }
     
     func sendMessage(with text: String) {
@@ -127,5 +177,17 @@ extension ConversationPresenter: ConversationViewOutput {
             createMessage(with: text)
             viewInput?.clearMessageTextField()
         }
+    }
+    
+    func photoButtonTapped() {
+        viewInput?.showAlert()
+    }
+    
+    func presentImages(with delegate: ImageSelectionDelegate?) {
+        moduleOutput?.conversationModuleWantsToOpenImageSelection(with: delegate)
+    }
+    
+    func addMessage(with cell: MessageTableViewCell, model: MessageModel) {
+       // configureCell(with: cell, model: model)
     }
 }

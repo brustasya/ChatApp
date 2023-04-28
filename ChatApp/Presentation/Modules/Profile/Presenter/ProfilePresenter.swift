@@ -10,12 +10,14 @@ import Combine
 
 final class ProfilePresenter {
     weak var viewInput: ProfileViewInput?
+    weak var moduleOutput: ProfileModuleOutput?
     private let profileService: UserProfileDataServiceProtocol
     
     internal lazy var cancellables = Set<AnyCancellable>()
 
-    init(profileService: UserProfileDataServiceProtocol) {
+    init(profileService: UserProfileDataServiceProtocol, moduleOutput: ProfileModuleOutput) {
         self.profileService = profileService
+        self.moduleOutput = moduleOutput
     }
     
     private func loadProfile() {
@@ -23,7 +25,7 @@ final class ProfilePresenter {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] userProfile in
                 let profileModel = UserProfileViewModel(
-                    userName: userProfile?.userName ?? "No name",
+                    userName: userProfile?.userName,
                     userDescription: userProfile?.userDescription,
                     userAvatar: userProfile?.userAvatar
                 )
@@ -82,5 +84,9 @@ extension ProfilePresenter: ProfileViewOutput {
     
     func editButtonTapped() {
         changeEditEnable(isEnable: true)
+    }
+    
+    func presentImages(with delegate: ImageSelectionDelegate?) {
+        moduleOutput?.moduleWantsToOpenImageSelection(with: delegate)
     }
 }

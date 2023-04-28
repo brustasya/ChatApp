@@ -30,7 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             themesAssembly: ThemesAssembly(serviceAssembly: serviceAssembly),
             profileAssembly: ProfileAssembly(serviceAssembly: serviceAssembly),
             conversationAssembly: ConversationAssembly(serviceAssembly: serviceAssembly),
-            conversationsListAssembly: ConversationsListAssembly(serviceAssembly: serviceAssembly)
+            conversationsListAssembly: ConversationsListAssembly(serviceAssembly: serviceAssembly),
+            imageSelectionAssembly: ImageSelectionAssembly(serviceAssembly: serviceAssembly)
         )
         coordinator?.start(in: window)
         

@@ -14,9 +14,10 @@ final class ProfileAssembly {
         self.serviceAssembly = serviceAssembly
     }
     
-    func makeProfileModule() -> UIViewController {
+    func makeProfileModule(moduleOutput: ProfileModuleOutput) -> UIViewController {
         let presenter = ProfilePresenter(
-            profileService: serviceAssembly.makeProfileService()
+            profileService: serviceAssembly.makeProfileService(),
+            moduleOutput: moduleOutput
         )
         let vc = ProfileViewController(output: presenter)
         presenter.viewInput = vc
