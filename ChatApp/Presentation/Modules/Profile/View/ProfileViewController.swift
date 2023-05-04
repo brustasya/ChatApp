@@ -2,51 +2,36 @@
 //  ProfileViewController.swift
 //  ChatApp
 //
-//  Created by Станислава on 18.04.2023.
+//  Created by Станислава on 02.05.2023.
 //
 
 import UIKit
-import AVFoundation
 
 class ProfileViewController: UIViewController {
     internal var output: ProfileViewOutput
     
-    internal lazy var titleLabel = UILabel()
-    internal lazy var editButton = UIButton()
-    internal lazy var closeButton = UIButton()
-    internal lazy var profileImageView = UIImageView()
-    internal lazy var editProfileImageView = UIImageView()
-    internal lazy var addPhotoButton = UIButton()
-    internal lazy var nameLabel = UILabel()
-    internal lazy var descriptionLabel = UILabel()
-    internal lazy var cancelButton = UIButton()
-    internal lazy var saveButton = UIButton()
-    internal lazy var nameTextField = UITextField()
-    internal lazy var nameStackView = UIStackView()
-    internal lazy var bioStackView = UIStackView()
-    internal lazy var viewNameBackground = UIView()
-    internal lazy var viewBioBackground = UIView()
-    internal lazy var nameEditLabel = UILabel()
-    internal lazy var bioLabel = UILabel()
-    internal lazy var bioTextField = UITextField()
-    internal lazy var bottomSeparator = UIView()
-    internal lazy var topSeparator = UIView()
-    internal lazy var centerSeparatop = UIView()
-        
-    internal let pickerController = UIImagePickerController()
-    internal lazy var activityIndicatorView = UIActivityIndicatorView(style: .medium)
-    internal lazy var theme = Theme.light
+    private lazy var editButton = UIButton()
+    private lazy var profileImageView = UIImageView()
+    private lazy var addPhotoButton = UIButton()
+    private lazy var nameLabel = UILabel()
+    private lazy var descriptionLabel = UILabel()
+    private lazy var backgroundView = UIView()
+
+    private lazy var theme = Theme.light
+    private lazy var isShaking = false
     
-    internal let lightTheme = [
-        "backgroundColor": UIColor.white,
-        "editBackgroundColor": UIColor.systemGray6,
+    private var herbCreator: HerbCreatorProtocol?
+
+    private let lightTheme = [
+        "backgroundColor": UIColor.systemGray6,
+        "secondaryBackgroundColor": UIColor.white,
         "textColor": UIColor.black,
         "secondaryTextColor": UIColor.systemGray
     ]
     
-    internal let darkTheme = [
+    private let darkTheme = [
         "backgroundColor": #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1),
-        "editBackgroundColor": UIColor.black,
+        "secondaryBackgroundColor": UIColor.black,
         "textColor": UIColor.white,
         "secondaryTextColor": UIColor.systemGray5
     ]
@@ -63,10 +48,8 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        pickerController.delegate = self
-        pickerController.allowsEditing = true
-        pickerController.mediaTypes = ["public.image"]
         output.viewIsReady()
+        self.herbCreator = HerbCreator(in: view)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,228 +59,102 @@ class ProfileViewController: UIViewController {
     
     private func setupView() {
         setupTitle()
-        // setupCloseButton()
-        setupEditButton()
+        setupBackgroundView()
         setupImageView()
         setupAddPhotoButton()
         setupNameLabel()
+        setupEditButton()
         setupDescriptionLabel()
-        setupCancelButton()
-        setupSaveButton()
-        setupEditViews()
-        setupEditProfileImageView()
-        
-        view.addSubview(activityIndicatorView)
-        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            activityIndicatorView.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor),
-            activityIndicatorView.centerXAnchor.constraint(equalTo: saveButton.centerXAnchor)
-        ])
     }
     
-    private func setupEditViews() {
-        viewNameBackground.backgroundColor = .white
-        viewNameBackground.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(viewNameBackground)
-        
-        viewBioBackground.backgroundColor = .white
-        viewBioBackground.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(viewBioBackground)
-        
-        nameEditLabel.text = "Name"
-        nameEditLabel.translatesAutoresizingMaskIntoConstraints = false
-        viewNameBackground.addSubview(nameEditLabel)
-        
-        nameTextField.placeholder = "Enter your name"
-        nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameTextField)
-        nameTextField.isHidden = true
-        
-        bioLabel.text = "Bio"
-        bioLabel.translatesAutoresizingMaskIntoConstraints = false
-        viewBioBackground.addSubview(bioLabel)
-        
-        bioTextField.placeholder = "Enter your bio"
-        bioTextField.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bioTextField)
-        bioTextField.isHidden = true
+    private func setupBackgroundView() {
+        view.addSubview(backgroundView)
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.backgroundColor = theme == .dark ? .black : .white
+        backgroundView.layer.cornerRadius = 10
         
         NSLayoutConstraint.activate([
-            viewNameBackground.heightAnchor.constraint(equalToConstant: 44),
-            viewNameBackground.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            viewNameBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            viewNameBackground.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 24),
-            
-            viewBioBackground.heightAnchor.constraint(equalToConstant: 44),
-            viewBioBackground.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            viewBioBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            viewBioBackground.topAnchor.constraint(equalTo: viewNameBackground.bottomAnchor),
-            
-            nameEditLabel.leadingAnchor.constraint(equalTo: viewNameBackground.leadingAnchor, constant: 16),
-            nameEditLabel.widthAnchor.constraint(equalToConstant: 96),
-            nameEditLabel.heightAnchor.constraint(equalToConstant: 22),
-            nameEditLabel.centerYAnchor.constraint(equalTo: viewNameBackground.centerYAnchor),
-            
-            bioLabel.leadingAnchor.constraint(equalTo: viewBioBackground.leadingAnchor, constant: 16),
-            bioLabel.widthAnchor.constraint(equalToConstant: 96),
-            bioLabel.heightAnchor.constraint(equalToConstant: 22),
-            bioLabel.centerYAnchor.constraint(equalTo: viewBioBackground.centerYAnchor),
-            
-            nameTextField.leadingAnchor.constraint(equalTo: nameEditLabel.trailingAnchor, constant: 8),
-            nameTextField.heightAnchor.constraint(equalToConstant: 22),
-            nameTextField.centerYAnchor.constraint(equalTo: viewNameBackground.centerYAnchor),
-            nameTextField.trailingAnchor.constraint(lessThanOrEqualTo: viewNameBackground.trailingAnchor, constant: -36),
-            
-            bioTextField.leadingAnchor.constraint(equalTo: bioLabel.trailingAnchor, constant: 8),
-            bioTextField.heightAnchor.constraint(equalToConstant: 22),
-            bioTextField.centerYAnchor.constraint(equalTo: viewBioBackground.centerYAnchor),
-            bioTextField.trailingAnchor.constraint(lessThanOrEqualTo: viewBioBackground.trailingAnchor, constant: -36)
+            backgroundView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            backgroundView.heightAnchor.constraint(equalToConstant: 402)
         ])
-        
-        viewNameBackground.isHidden = true
-        viewBioBackground.isHidden = true
-        
-        setupSeparators()
-    }
-    
-    private func setupSeparators() {
-        bottomSeparator.backgroundColor = .systemGray5
-        topSeparator.backgroundColor = .systemGray5
-        centerSeparatop.backgroundColor = .systemGray5
-        
-        view.addSubview(bottomSeparator)
-        view.addSubview(topSeparator)
-        view.addSubview(centerSeparatop)
-        
-        bottomSeparator.translatesAutoresizingMaskIntoConstraints = false
-        topSeparator.translatesAutoresizingMaskIntoConstraints = false
-        centerSeparatop.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            topSeparator.bottomAnchor.constraint(equalTo: viewNameBackground.topAnchor),
-            topSeparator.heightAnchor.constraint(equalToConstant: 1.5),
-            topSeparator.leadingAnchor.constraint(equalTo: viewNameBackground.leadingAnchor),
-            topSeparator.trailingAnchor.constraint(equalTo: viewNameBackground.trailingAnchor),
-            
-            bottomSeparator.topAnchor.constraint(equalTo: viewBioBackground.bottomAnchor),
-            bottomSeparator.heightAnchor.constraint(equalToConstant: 1.5),
-            bottomSeparator.leadingAnchor.constraint(equalTo: viewBioBackground.leadingAnchor),
-            bottomSeparator.trailingAnchor.constraint(equalTo: viewBioBackground.trailingAnchor),
-            
-            centerSeparatop.bottomAnchor.constraint(equalTo: viewNameBackground.bottomAnchor),
-            centerSeparatop.heightAnchor.constraint(equalToConstant: 1.5),
-            centerSeparatop.leadingAnchor.constraint(equalTo: viewNameBackground.leadingAnchor, constant: 16),
-            centerSeparatop.trailingAnchor.constraint(equalTo: viewNameBackground.trailingAnchor)
-        ])
-        
-        bottomSeparator.isHidden = true
-        topSeparator.isHidden = true
-        centerSeparatop.isHidden = true
-    }
-    
-    private func setupSaveButton() {
-        view.addSubview(saveButton)
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.setTitleColor(.systemBlue, for: .normal)
-        saveButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
-        
-        NSLayoutConstraint.activate([
-            saveButton.heightAnchor.constraint(equalToConstant: 20),
-            saveButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
-            saveButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16)
-        ])
-        
-        saveButton.addTarget(
-            self,
-            action: #selector(saveProfileDataButtonTaped),
-            for: .touchUpInside
-        )
-        
-        saveButton.isHidden = true
-    }
-    
-    private func setupCancelButton() {
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(cancelButton)
-        
-        cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.setTitleColor(.systemBlue, for: .normal)
-        cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
-        
-        NSLayoutConstraint.activate([
-            cancelButton.heightAnchor.constraint(equalToConstant: 20),
-            cancelButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
-            cancelButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16)
-        ])
-        
-        cancelButton.addTarget(
-            self,
-            action: #selector(disableEditMode),
-            for: .touchUpInside
-        )
-        
-        cancelButton.isHidden = true
     }
     
     private func setupTitle() {
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(titleLabel)
-        titleLabel.text = "My Profile"
-        titleLabel.textAlignment = .center
-        titleLabel.font = .systemFont(ofSize: 17.0, weight: .semibold)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.heightAnchor.constraint(equalToConstant: 20),
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ])
-    }
-    
-    private func setupCloseButton() {
-        closeButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(closeButton)
-        closeButton.setTitle("Close", for: .normal)
-        closeButton.setTitleColor(.systemBlue, for: .normal)
-        closeButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
-        
-        NSLayoutConstraint.activate([
-            closeButton.heightAnchor.constraint(equalToConstant: 20),
-            closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
-            closeButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16)
-        ])
-        
-        closeButton.addTarget(
-            self,
-            action: #selector(dismissController),
-            for: .touchUpInside
-        )
-    }
-    
-    @objc private func dismissController() {
-        dismiss(animated: true)
+        navigationItem.title = "My Profile"
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     private func setupEditButton() {
         editButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(editButton)
-        editButton.setTitle("Edit", for: .normal)
-        editButton.setTitleColor(.systemBlue, for: .normal)
-        editButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        editButton.setTitle("Edit Profile", for: .normal)
+        editButton.setTitleColor(.white, for: .normal)
+        editButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        editButton.backgroundColor = .systemBlue
+        editButton.layer.cornerRadius = 14
         
         NSLayoutConstraint.activate([
-            editButton.heightAnchor.constraint(equalToConstant: 20),
-            editButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 17),
-            editButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16)
+            editButton.heightAnchor.constraint(equalToConstant: 50),
+            editButton.leadingAnchor.constraint(equalTo: backgroundView.leadingAnchor, constant: 16),
+            editButton.trailingAnchor.constraint(equalTo: backgroundView.trailingAnchor, constant: -16),
+            editButton.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor, constant: -16)
         ])
         
         editButton.addTarget(
             self,
-            action: #selector(enableEditMode),
+            action: #selector(editButtonTapped),
             for: .touchUpInside
         )
+        
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(editButtonPressed(_:)))
+        editButton.addGestureRecognizer(longPressRecognizer)
+    }
+    
+    @objc func editButtonPressed(_ sender: UILongPressGestureRecognizer) {
+        guard sender.state == .ended else { return }
+        if isShaking {
+            isShaking = false
+            if let presentationLayer = editButton.layer.presentation() {
+                editButton.layer.transform = presentationLayer.transform
+                editButton.layer.removeAnimation(forKey: "shake")
+            }
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                self.editButton.transform = .identity
+            }, completion: { [weak self] _ in
+                self?.editButton.layer.removeAllAnimations()
+            })
+        } else {
+            isShaking = true
+            animateShake()
+        }
+    }
+    
+    private func animateShake() {
+        let rotation = CABasicAnimation(keyPath: "transform.rotation.z")
+        rotation.fromValue = -Double.pi / 10.0
+        rotation.toValue = Double.pi / 10.0
+        rotation.duration = 0.15
+        rotation.isCumulative = true
+        rotation.repeatCount = Float.infinity
+        rotation.autoreverses = true
+        
+        let translation = CABasicAnimation(keyPath: "position")
+        translation.fromValue = CGPoint(x: view.frame.width / 2 - 5, y: editButton.frame.maxY - editButton.frame.height / 2 - 5)
+        translation.toValue = CGPoint(x: view.frame.width / 2 + 5, y: editButton.frame.maxY - editButton.frame.height / 2 + 5)
+        translation.duration = 0.15
+        translation.autoreverses = true
+        translation.isCumulative = true
+        translation.repeatCount = Float.infinity
+        
+        let group = CAAnimationGroup()
+        group.duration = 0.3
+        group.autoreverses = true
+        group.animations = [rotation, translation]
+        group.repeatCount = Float.infinity
+        editButton.layer.add(group, forKey: "shake")
     }
     
     private func setupImageView() {
@@ -307,30 +164,14 @@ class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate([
             profileImageView.widthAnchor.constraint(equalToConstant: 150),
             profileImageView.heightAnchor.constraint(equalToConstant: 150),
-            profileImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 49),
+            profileImageView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 32),
             profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         
         profileImageView.layer.cornerRadius = 75
         profileImageView.clipsToBounds = true
         profileImageView.contentMode = .scaleAspectFill
-    }
-    
-    private func setupEditProfileImageView() {
-        editProfileImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(editProfileImageView)
-        
-        NSLayoutConstraint.activate([
-            editProfileImageView.widthAnchor.constraint(equalToConstant: 150),
-            editProfileImageView.heightAnchor.constraint(equalToConstant: 150),
-            editProfileImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 49),
-            editProfileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ])
-        
-        editProfileImageView.layer.cornerRadius = 75
-        editProfileImageView.clipsToBounds = true
-        editProfileImageView.isHidden = true
-        editProfileImageView.contentMode = .scaleAspectFill
+        profileImageView.image = UIImage(named: "avatar")
     }
     
     private func setupAddPhotoButton() {
@@ -347,7 +188,7 @@ class ProfileViewController: UIViewController {
             addPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         
-        addPhotoButton.addTarget(self, action: #selector(addPhoto), for: .touchUpInside)
+        addPhotoButton.addTarget(self, action: #selector(addPhotoButtonTapped), for: .touchUpInside)
     }
     
     private func setupNameLabel() {
@@ -360,8 +201,8 @@ class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate([
             nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             nameLabel.topAnchor.constraint(equalTo: addPhotoButton.bottomAnchor, constant: 24),
-            nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
-            nameLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16)
+            nameLabel.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 16),
+            nameLabel.rightAnchor.constraint(equalTo: backgroundView.rightAnchor, constant: -16)
         ])
     }
     
@@ -375,11 +216,62 @@ class ProfileViewController: UIViewController {
         descriptionLabel.sizeToFit()
         
         NSLayoutConstraint.activate([
-            descriptionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16),
-            descriptionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
+            descriptionLabel.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 16),
+            descriptionLabel.rightAnchor.constraint(equalTo: backgroundView.rightAnchor, constant: -16),
             descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -20)
+            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: editButton.topAnchor, constant: -24)
         ])
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: view)
+        herbCreator?.start(at: location)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: view)
+        herbCreator?.move(to: location)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        herbCreator?.stop()
+    }
+    
+    @objc private func addPhotoButtonTapped() {
+        output.addPhotoButtonTapped(with: self)
+    }
+    
+    @objc private func editButtonTapped() {
+        output.editButtonTapped(with: self)
+    }
+}
+
+extension ProfileViewController: ProfileViewInput {
+    func updateProfile(with model: UserProfileViewModel) {
+        nameLabel.text = model.userName ?? "No name"
+        descriptionLabel.text = model.userDescription ?? "No bio specified"
+        if let imageData = model.userAvatar {
+            profileImageView.image = UIImage(data: imageData)
+        } else {
+            profileImageView.image = UIImage(named: "avatar")
+        }
+    }
+    
+    func setupTheme(with theme: Theme) {
+        let themeColors = theme == Theme.dark ? darkTheme : lightTheme
+        view.backgroundColor = themeColors["backgroundColor"]
+        backgroundView.backgroundColor = themeColors["secondaryBackgroundColor"]
+        nameLabel.textColor = themeColors["textColor"]
+        descriptionLabel.textColor = themeColors["secondaryTextColor"]
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: themeColors["textColor"] ?? .black]
+    }
+}
+
+extension ProfileViewController: ProfileSaveDelegate {
+    func profileSaved(with profileModel: UserProfileViewModel) {
+        output.update(with: profileModel)
     }
 }

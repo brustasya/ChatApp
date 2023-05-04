@@ -2,7 +2,7 @@
 //  ProfileAssembly.swift
 //  ChatApp
 //
-//  Created by Станислава on 18.04.2023.
+//  Created by Станислава on 03.05.2023.
 //
 
 import UIKit

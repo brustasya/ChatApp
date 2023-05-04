@@ -17,7 +17,7 @@ class ThemesViewController: UIViewController {
     // MARK: - Private properties
     
     private var output: ThemesViewOutput
-
+    private var herbCreator: HerbCreatorProtocol?
     private lazy var theme: Theme = .light
     
     private let lightTheme = [
@@ -58,6 +58,7 @@ class ThemesViewController: UIViewController {
         
         setupUI()
         output.viewIsReady()
+        self.herbCreator = HerbCreator(in: view)
     }
     
     // MARK: - Setup
@@ -239,6 +240,22 @@ class ThemesViewController: UIViewController {
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: view)
+        herbCreator?.start(at: location)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: view)
+        herbCreator?.move(to: location)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        herbCreator?.stop()
+    }
+    
     // MARK: - @objc methods
     
     @objc private func changeThemeButtonTapped(_ sender: UIButton) {
@@ -262,6 +279,7 @@ class ThemesViewController: UIViewController {
 extension ThemesViewController: ThemesViewInput {
     
     func changeTheme(theme: Theme) {
+        self.theme = theme
         if theme == Theme.light {
             lightThemeButton.isSelected = true
             lightThemeButton.tintColor = .systemBlue

@@ -2,7 +2,7 @@
 //  ProfileViewOutput.swift
 //  ChatApp
 //
-//  Created by Станислава on 18.04.2023.
+//  Created by Станислава on 02.05.2023.
 //
 
 import Foundation
@@ -10,9 +10,7 @@ import Foundation
 protocol ProfileViewOutput: AnyObject {
     func viewIsReady()
     func viewWillAppear()
-    func saveButtonTapped(profileModel: UserProfileViewModel)
-    func addPhotoButtonTapped()
-    func cancelButtonTapped()
-    func editButtonTapped()
-    func presentImages(with delegate: ImageSelectionDelegate?)
+    func addPhotoButtonTapped(with delegate: ProfileSaveDelegate?)
+    func editButtonTapped(with delegate: ProfileSaveDelegate?)
+    func update(with profileModel: UserProfileViewModel)
 }

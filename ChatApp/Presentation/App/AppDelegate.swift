@@ -29,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         coordinator = RootCoordinator(
             themesAssembly: ThemesAssembly(serviceAssembly: serviceAssembly),
             profileAssembly: ProfileAssembly(serviceAssembly: serviceAssembly),
+            profileEditingAssembly: ProfileEditingAssembly(serviceAssembly: serviceAssembly),
             conversationAssembly: ConversationAssembly(serviceAssembly: serviceAssembly),
             conversationsListAssembly: ConversationsListAssembly(serviceAssembly: serviceAssembly),
             imageSelectionAssembly: ImageSelectionAssembly(serviceAssembly: serviceAssembly)

@@ -2,7 +2,7 @@
 //  ProfilePresenter.swift
 //  ChatApp
 //
-//  Created by Станислава on 18.04.2023.
+//  Created by Станислава on 02.05.2023.
 //
 
 import Foundation
@@ -12,6 +12,7 @@ final class ProfilePresenter {
     weak var viewInput: ProfileViewInput?
     weak var moduleOutput: ProfileModuleOutput?
     private let profileService: UserProfileDataServiceProtocol
+    private var profileModel: UserProfileViewModel?
     
     internal lazy var cancellables = Set<AnyCancellable>()
 
@@ -30,32 +31,15 @@ final class ProfilePresenter {
                     userAvatar: userProfile?.userAvatar
                 )
                 
-                self?.viewInput?.updateProfileData(with: profileModel)
+                self?.viewInput?.updateProfile(with: profileModel)
+                self?.profileModel = profileModel
             }
             .store(in: &cancellables)
     }
     
-    private func saveProfile(with userProfileModel: UserProfileViewModel) {
-        profileService.saveUserProfile(userProfileModel) { [weak self] (isSaved) in
-            if isSaved {
-                self?.viewInput?.showSucsessAlert()
-                self?.loadProfile()
-            } else {
-                self?.viewInput?.showErrorAlert()
-            }
-            
-            self?.viewInput?.changeEnableForSaving(false)
-        }
-    }
-    
-    private func changeTheme(isEditting: Bool) {
+    private func changeTheme() {
         let theme = ThemeService.shared.getTheme()
-        viewInput?.changeTheme(with: theme, isEditting: isEditting)
-    }
-    
-    private func changeEditEnable(isEnable: Bool) {
-        viewInput?.changeEditEnable(isEnable)
-        changeTheme(isEditting: isEnable)
+        viewInput?.setupTheme(with: theme)
     }
 }
 
@@ -65,28 +49,27 @@ extension ProfilePresenter: ProfileViewOutput {
     }
     
     func viewWillAppear() {
-        changeTheme(isEditting: false)
+        changeTheme()
     }
     
-    func saveButtonTapped(profileModel: UserProfileViewModel) {
-        viewInput?.changeEnableForSaving(true)
-        saveProfile(with: profileModel)
+    func addPhotoButtonTapped(with delegate: ProfileSaveDelegate?) {
+        moduleOutput?.moduleWantsToOpenProfileEditing(
+            with: profileModel ?? UserProfileViewModel(userName: "", userDescription: "", userAvatar: nil),
+            isPhotoAdded: true,
+            delegate: delegate
+        )
+    }
+
+    func editButtonTapped(with delegate: ProfileSaveDelegate?) {
+        moduleOutput?.moduleWantsToOpenProfileEditing(
+            with: profileModel ?? UserProfileViewModel(userName: "", userDescription: "", userAvatar: nil),
+            isPhotoAdded: false,
+            delegate: delegate
+        )
     }
     
-    func addPhotoButtonTapped() {
-        changeEditEnable(isEnable: true)
-        viewInput?.showPhotoAlert()
-    }
-    
-    func cancelButtonTapped() {
-        changeEditEnable(isEnable: false)
-    }
-    
-    func editButtonTapped() {
-        changeEditEnable(isEnable: true)
-    }
-    
-    func presentImages(with delegate: ImageSelectionDelegate?) {
-        moduleOutput?.moduleWantsToOpenImageSelection(with: delegate)
+    func update(with profileModel: UserProfileViewModel) {
+        self.profileModel = profileModel
+        viewInput?.updateProfile(with: profileModel)
     }
 }

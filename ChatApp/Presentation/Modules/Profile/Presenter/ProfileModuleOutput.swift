@@ -2,11 +2,15 @@
 //  ProfileModuleOutput.swift
 //  ChatApp
 //
-//  Created by Станислава on 28.04.2023.
+//  Created by Станислава on 02.05.2023.
 //
 
 import Foundation
 
 protocol ProfileModuleOutput: AnyObject {
-    func moduleWantsToOpenImageSelection(with delegate: ImageSelectionDelegate?)
+    func moduleWantsToOpenProfileEditing(
+        with profileModel: UserProfileViewModel,
+        isPhotoAdded: Bool,
+        delegate: ProfileSaveDelegate?
+    )
 }

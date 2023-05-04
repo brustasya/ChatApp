@@ -8,30 +8,7 @@
 import UIKit
 import AVFoundation
 
-extension ProfileViewController {
-    @objc internal func disableEditMode() {
-        output.cancelButtonTapped()
-    }
-    
-    @objc internal func enableEditMode() {
-        output.editButtonTapped()
-    }
-    
-    @objc internal func addPhoto() {
-        output.addPhotoButtonTapped()
-    }
-    
-    @objc internal func saveProfileDataButtonTaped() {
-        let userProfileModel = UserProfileViewModel(
-            userName: nameTextField.text == "" ? "No name" : nameTextField.text,
-            userDescription: bioTextField.text == "" ? "No bio specified" : bioTextField.text,
-            userAvatar: editProfileImageView.image?.pngData()
-        )
-        output.saveButtonTapped(profileModel: userProfileModel)
-    }
-}
-
-extension ProfileViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+extension ProfileEditingViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
@@ -94,48 +71,19 @@ extension ProfileViewController: UIImagePickerControllerDelegate & UINavigationC
     }
 }
 
-extension ProfileViewController: ProfileViewInput {
+extension ProfileEditingViewController: ProfileEditingViewInput {
     func updateProfileData(with profileModel: UserProfileViewModel) {
-        nameLabel.text = profileModel.userName ?? "No name"
         nameTextField.text = profileModel.userName ?? ""
-        descriptionLabel.text = profileModel.userDescription ?? "No bio specified"
         bioTextField.text = profileModel.userDescription ?? ""
         
         if nameTextField.text == "No name" { nameTextField.text = "" }
         if bioTextField.text == "No bio specified" { bioTextField.text = "" }
         
         if let imageData = profileModel.userAvatar {
-            profileImageView.image = UIImage(data: imageData)
             editProfileImageView.image = UIImage(data: imageData)
         } else {
-            profileImageView.image = UIImage(named: "avatar")
             editProfileImageView.image = UIImage(named: "avatar")
         }
-    }
-    
-    func changeEditEnable(_ isEdittingEnable: Bool) {
-        if isEdittingEnable {
-            titleLabel.text = "Edit Profile"
-            view.backgroundColor = theme == Theme.dark ? darkTheme["editBackgroundColor"] : lightTheme["editBackgroundColor"]
-        } else {
-            titleLabel.text = "My Profile"
-            view.backgroundColor = theme == Theme.dark ? darkTheme["backgroundColor"] : lightTheme["backgroundColor"]
-        }
-        closeButton.isHidden = isEdittingEnable
-        editButton.isHidden = isEdittingEnable
-        nameLabel.isHidden = isEdittingEnable
-        descriptionLabel.isHidden = isEdittingEnable
-        
-        cancelButton.isHidden = !isEdittingEnable
-        saveButton.isHidden = !isEdittingEnable
-        viewNameBackground.isHidden = !isEdittingEnable
-        nameTextField.isHidden = !isEdittingEnable
-        viewBioBackground.isHidden = !isEdittingEnable
-        bioTextField.isHidden = !isEdittingEnable
-        bottomSeparator.isHidden = !isEdittingEnable
-        topSeparator.isHidden = !isEdittingEnable
-        centerSeparatop.isHidden = !isEdittingEnable
-        editProfileImageView.isHidden = !isEdittingEnable
     }
     
     func changeEnableForSaving(_ isSaving: Bool) {
@@ -155,7 +103,7 @@ extension ProfileViewController: ProfileViewInput {
         let alertController = UIAlertController(title: "Success", message: "You are breathtaking", preferredStyle: .alert)
         
         let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
-            self?.disableEditMode()
+            self?.dismissController()
         }
         
         alertController.addAction(okAction)
@@ -167,7 +115,7 @@ extension ProfileViewController: ProfileViewInput {
         let alertController = UIAlertController(title: "Could not save profile", message: "Try again", preferredStyle: .alert)
         
         let okAction = UIAlertAction(title: "OK", style: .default) { [weak self] (_) in
-            self?.disableEditMode()
+            self?.dismissController()
         }
         
         let tryAgainAction = UIAlertAction(title: "Try Again", style: .default) { [weak self] (_) in
@@ -180,13 +128,11 @@ extension ProfileViewController: ProfileViewInput {
         present(alertController, animated: true, completion: nil)
     }
     
-    func changeTheme(with theme: Theme, isEditting: Bool) {
+    func changeTheme(with theme: Theme) {
         let themeColors = theme == Theme.dark ? darkTheme : lightTheme
         
-        view.backgroundColor = isEditting ? themeColors["editBackgroundColor"] : themeColors["backgroundColor"]
+        view.backgroundColor = themeColors["editBackgroundColor"]
         titleLabel.textColor = themeColors["textColor"]
-        nameLabel.textColor = themeColors["textColor"]
-        descriptionLabel.textColor = themeColors["secondaryTextColor"]
         nameStackView.backgroundColor = themeColors["backgroundColor"]
         bioStackView.backgroundColor = themeColors["backgroundColor"]
         viewBioBackground.backgroundColor = themeColors["backgroundColor"]
@@ -225,7 +171,7 @@ extension ProfileViewController: ProfileViewInput {
     }
 }
 
-extension ProfileViewController: ImageSelectionDelegate {
+extension ProfileEditingViewController: ImageSelectionDelegate {
     func imageSelection(didSelectImage data: Data, url: String) {
         editProfileImageView.image = UIImage(data: data)
     }
