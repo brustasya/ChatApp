@@ -158,6 +158,7 @@ class ProfileViewController: UIViewController {
     }
     
     private func setupImageView() {
+        profileImageView.accessibilityIdentifier = "profileImageView"
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
         
@@ -175,6 +176,7 @@ class ProfileViewController: UIViewController {
     }
     
     private func setupAddPhotoButton() {
+        addPhotoButton.accessibilityIdentifier = "addPhotoButton"
         addPhotoButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addPhotoButton)
         addPhotoButton.setTitle("Add Photo", for: .normal)
@@ -192,6 +194,7 @@ class ProfileViewController: UIViewController {
     }
     
     private func setupNameLabel() {
+        nameLabel.accessibilityIdentifier = "nameLabel"
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         nameLabel.numberOfLines = 2

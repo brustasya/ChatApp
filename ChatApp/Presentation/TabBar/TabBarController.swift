@@ -17,7 +17,6 @@ class TabBarController: UITabBarController {
         themesdNavigationController: UINavigationController,
         profileNavigationController: UINavigationController
     ) {
-
         self.conversationsListNavigationController = conversationsListNavigationController
         self.themesdNavigationController = themesdNavigationController
         self.profileNavigationController = profileNavigationController
@@ -39,6 +38,7 @@ class TabBarController: UITabBarController {
     }
     
     private func setupTabBar() {
+        tabBar.accessibilityIdentifier = "tabBar"
         tabBar.layer.borderWidth = 0.5
         tabBar.layer.masksToBounds = true
         tabBar.frame = CGRect(x: -1, y: 0, width: view.frame.width + 1, height: 84)
@@ -58,7 +58,7 @@ class TabBarController: UITabBarController {
             image: UIImage(systemName: "person.crop.circle"),
             tag: 2
         )
-        
+        profileNavigationController.tabBarItem.accessibilityIdentifier = "profileIcon"
         setViewControllers([
             conversationsListNavigationController,
             themesdNavigationController,

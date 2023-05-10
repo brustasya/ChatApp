@@ -23,9 +23,7 @@ class ConversationsListViewController: UIViewController {
     private lazy var dataSource = makeDataSource()
     
     private lazy var theme = Theme.light
-    
-    private lazy var chatDataSource = ChatDataSource()
-    
+        
     private let lightTheme = [
         "backgroundColor": UIColor.white,
         "textColor": UIColor.black,

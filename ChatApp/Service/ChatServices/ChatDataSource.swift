@@ -10,8 +10,12 @@ import TFSChatTransport
 
 final class ChatDataSource {
 
-    private let coreDataService: CoreDataServiceProtocol = CoreDataService()
+    private let coreDataService: CoreDataServiceProtocol
     
+    init(coreDataService: CoreDataServiceProtocol) {
+        self.coreDataService = coreDataService
+    }
+
 }
 
 extension ChatDataSource: ChatDataSourceProtocol {

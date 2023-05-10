@@ -17,7 +17,7 @@ final class ServiceAssembly {
     private let perPage = 150
     
     func makeChatDataService() -> ChatDataSourceProtocol {
-        ChatDataSource()
+        ChatDataSource(coreDataService: CoreDataService())
     }
     
     func makeChatService() -> ChatService {
@@ -33,6 +33,6 @@ final class ServiceAssembly {
     }
     
     func makeImageService() -> ImageServiceProtocol {
-        ImageService(apiKey: apiKey, baseURLString: baseURLString, perPage: perPage)
+        ImageService(apiKey: apiKey, baseURLString: baseURLString, perPage: perPage, networkService: NetworkService())
     }
 }

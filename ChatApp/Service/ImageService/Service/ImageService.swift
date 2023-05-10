@@ -8,11 +8,12 @@
 import Foundation
 
 class ImageService {
-    private let networkService: NetworkService = NetworkService()
+    private let networkService: NetworkServiceProtocol
     private let urlFactory: URLRequestFactoryProtocol
     
-    init(apiKey: String, baseURLString: String, perPage: Int) {
+    init(apiKey: String, baseURLString: String, perPage: Int, networkService: NetworkServiceProtocol) {
         urlFactory = URLRequestFactory(apiKey: apiKey, baseURLString: baseURLString, perPage: perPage)
+        self.networkService = networkService
     }
 }
 

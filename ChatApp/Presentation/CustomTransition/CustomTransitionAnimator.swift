@@ -31,6 +31,7 @@ class CustomTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         
         if isPresenting {
             containerView.addSubview(toVC.view)
+            
             toVC.view.frame = containerView.bounds
             toVC.view.frame.origin.y = 60
             toVC.view.alpha = 0
@@ -48,8 +49,7 @@ class CustomTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning 
                            options: [.curveEaseInOut],
                            animations: {
                 toVC.view.alpha = 1
-            },
-                           completion: { _ in
+            }, completion: { _ in
                 transitionContext.completeTransition(true)
             })
         } else {
@@ -61,8 +61,7 @@ class CustomTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning 
             UIView.animate(withDuration: transitionDuration(using: transitionContext),
                            animations: {
                 fromVC.view.alpha = 0
-            },
-                           completion: { _ in
+            }, completion: { _ in
                 transitionContext.completeTransition(true)
             })
         }
