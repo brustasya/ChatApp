@@ -6,10 +6,10 @@
 	<string>${BASE_URL}</string>
 	<key>ApiKey</key>
 	<string>${API_KEY}</string>
-	<key>Port</key>
-	<string>${PORT}</string>
-	<key>Host</key>
-	<string>${HOST}</string>
+	<key>ChatPort</key>
+	<string>${CHAT_PORT}</string>
+	<key>ChatHost</key>
+	<string>${CHAT_HOST}</string>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
 	<key>NSCameraUsageDescription</key>

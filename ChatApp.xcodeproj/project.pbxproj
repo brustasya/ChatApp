@@ -175,10 +175,8 @@
 		855940BD2A0BD9200065A30E /* ProfileUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileUITests.swift; sourceTree = "<group>"; };
 		855940C62A0BDA6C0065A30E /* ChatApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChatApp.xctestplan; sourceTree = "<group>"; };
 		855940CA2A0C06E80065A30E /* MockNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkService.swift; sourceTree = "<group>"; };
-		855940CF2A1580AB0065A30E /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		855940D92A158DB50065A30E /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		855940DB2A158EDB0065A30E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
-		855940DD2A1664480065A30E /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		859F3FAF29E4422700466172 /* Chat.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Chat.xcdatamodel; sourceTree = "<group>"; };
 		859F3FB129E44CA700466172 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		859F3FB329E44E7300466172 /* ChatDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataSource.swift; sourceTree = "<group>"; };
@@ -708,8 +706,6 @@
 			children = (
 				855940DB2A158EDB0065A30E /* Release.xcconfig */,
 				855940D92A158DB50065A30E /* Debug.xcconfig */,
-				855940CF2A1580AB0065A30E /* Config.xcconfig */,
-				855940DD2A1664480065A30E /* Secrets.xcconfig */,
 				855940C62A0BDA6C0065A30E /* ChatApp.xctestplan */,
 				85A1E7C429A687BA004AD1F4 /* ChatApp */,
 				855940AF2A0BD8FA0065A30E /* ChatAppTests */,
@@ -981,7 +977,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# \"${PODS_ROOT}/Swiftlint/swiftlint\" \"${SRCROOT}/ChatApp\"\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/Swiftlint/swiftlint\" \"${SRCROOT}/ChatApp\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
