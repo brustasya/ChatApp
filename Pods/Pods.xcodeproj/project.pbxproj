@@ -19,29 +19,29 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		36FC1E502190F1D0D983640D1517DA9B /* Pods-ChatApp-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF011A981761287B3276BCBA6985C2BB /* Pods-ChatApp-dummy.m */; };
-		7B68CD708458C2CE9E73772FD6C372F1 /* Pods-ChatApp-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 80C1B6ADE843AA46135CE2255028F887 /* Pods-ChatApp-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7DD85D7E261D4EE2BD35F0E95CD036D8 /* ChatEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDFE8AA7944FB1A4035BFB03725A01F /* ChatEvent.swift */; };
-		85ECACBE94CE3AFE0C5F7F70164A4EA4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1BFA29B7CF8EFCA97967A11AF007609 /* Foundation.framework */; };
-		929BFA810DF9841213248541E75F0703 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAB7FA03B9CB8FC9CE3222FC5324578 /* Message.swift */; };
-		9FE44A4405279F0809FA3780F4A7A3C2 /* TFSChatTransport-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D8E0EB658B9330F0E83FA7BB061CEC6B /* TFSChatTransport-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A66E0CC850411D2B43FF52C43FD4C69D /* SSEService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5AE6613125D9A86515A668B4E36D04 /* SSEService.swift */; };
-		B2FBEABE9167EDFD952B0895CF3D2DA5 /* TFSChatTransport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CC4442E0562AB6C704119ED5A60B47 /* TFSChatTransport-dummy.m */; };
-		B829DA389CB063D00DC4FC04FFAE3418 /* Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7375A81860FC8096B64A8F25B9DAFB77 /* Combine.framework */; };
-		DD30CB1FAB62D9E3B62CF9BA68B5212B /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473F6D21F2B435369215C7832F81EB55 /* ChatService.swift */; };
-		F0CD9026FF63B50DD479E3474FF7D275 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105EF091F31F3AB63C099D54E9068080 /* Channel.swift */; };
-		F0E0D355384B36B470A0C7A26FD41EFD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1BFA29B7CF8EFCA97967A11AF007609 /* Foundation.framework */; };
+		1AB88FE24A171BAFA779B691EAFB6BA3 /* Combine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7375A81860FC8096B64A8F25B9DAFB77 /* Combine.framework */; };
+		2BF0BF715085D9BB020D251EAF6B2590 /* TFSChatTransport-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D8E0EB658B9330F0E83FA7BB061CEC6B /* TFSChatTransport-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		37FDE1644A3D62C57C6591C84AD6B26B /* Pods-ChatApp-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF011A981761287B3276BCBA6985C2BB /* Pods-ChatApp-dummy.m */; };
+		44FC50E064EA632C20679288F13F7CB6 /* Pods-ChatApp-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 80C1B6ADE843AA46135CE2255028F887 /* Pods-ChatApp-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5614E1B2A23E8894DED475D9CFAC6F79 /* ChatEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDFE8AA7944FB1A4035BFB03725A01F /* ChatEvent.swift */; };
+		647B7639947F9B81975FBDCA10EA5973 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1BFA29B7CF8EFCA97967A11AF007609 /* Foundation.framework */; };
+		8E4008D548A79086811B37079186D2F3 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAB7FA03B9CB8FC9CE3222FC5324578 /* Message.swift */; };
+		95722733B444271F5217E673BEC4649A /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473F6D21F2B435369215C7832F81EB55 /* ChatService.swift */; };
+		9A7C4A39A062123A1764323C6616B931 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105EF091F31F3AB63C099D54E9068080 /* Channel.swift */; };
+		AD0CA7B597326C1F4A9FFC919EA9C39C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1BFA29B7CF8EFCA97967A11AF007609 /* Foundation.framework */; };
+		CE50D8CF031B10FFAC805407721A977B /* SSEService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5AE6613125D9A86515A668B4E36D04 /* SSEService.swift */; };
+		EA8E38183A395E905215CA5DF27E47A6 /* TFSChatTransport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CC4442E0562AB6C704119ED5A60B47 /* TFSChatTransport-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		86965473FE06BD09E302B110919B2B0D /* PBXContainerItemProxy */ = {
+		5FF9B1700F1D14B7DB74A7E4FC280FE3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = C90E583443D3C8FC2FC19D2AE26CFA55;
 			remoteInfo = TFSChatTransport;
 		};
-		FD2D8D2592BD37C11533A585FB9312C7 /* PBXContainerItemProxy */ = {
+		F60670B8D889F00114B16764DE18E334 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
@@ -67,14 +67,14 @@
 		6B46E257FE9DD3D4BC363BA455E9C593 /* Pods-ChatApp-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-ChatApp-acknowledgements.plist"; sourceTree = "<group>"; };
 		7375A81860FC8096B64A8F25B9DAFB77 /* Combine.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Combine.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Combine.framework; sourceTree = DEVELOPER_DIR; };
 		80C1B6ADE843AA46135CE2255028F887 /* Pods-ChatApp-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-ChatApp-umbrella.h"; sourceTree = "<group>"; };
-		958807FE7BE049D5CC3FFD87A9E0CAAE /* TFSChatTransport */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = TFSChatTransport; path = TFSChatTransport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		958807FE7BE049D5CC3FFD87A9E0CAAE /* TFSChatTransport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = TFSChatTransport.framework; path = TFSChatTransport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		AF011A981761287B3276BCBA6985C2BB /* Pods-ChatApp-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-ChatApp-dummy.m"; sourceTree = "<group>"; };
 		B1BFA29B7CF8EFCA97967A11AF007609 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		B3B507A9118257EFC830D0E712F7C866 /* SwiftLint.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftLint.release.xcconfig; sourceTree = "<group>"; };
 		C5ABAF63D10F5E127F096A2FF2FB8AB1 /* Pods-ChatApp-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-ChatApp-acknowledgements.markdown"; sourceTree = "<group>"; };
 		D8E0EB658B9330F0E83FA7BB061CEC6B /* TFSChatTransport-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "TFSChatTransport-umbrella.h"; sourceTree = "<group>"; };
-		F1B8738E5AF68B43CE2044E35F9A9CDF /* Pods-ChatApp */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-ChatApp"; path = Pods_ChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1B8738E5AF68B43CE2044E35F9A9CDF /* Pods_ChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_ChatApp.framework; path = "Pods-ChatApp.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F495233B677AA4BB090B8C4290C85F09 /* Pods-ChatApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ChatApp.debug.xcconfig"; sourceTree = "<group>"; };
 		F6C2010194236FF315522A241BEE3C39 /* TFSChatTransport-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "TFSChatTransport-Info.plist"; sourceTree = "<group>"; };
 		FAD89D3FED2CDFE26ECA8380BD9B7A12 /* Pods-ChatApp-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-ChatApp-frameworks.sh"; sourceTree = "<group>"; };
@@ -82,20 +82,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5B06151C6DCE88FEFFEFC8D5EFAF2B51 /* Frameworks */ = {
+		5D2A5EC827D240137FE9C52CFC82F2A3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0E0D355384B36B470A0C7A26FD41EFD /* Foundation.framework in Frameworks */,
+				647B7639947F9B81975FBDCA10EA5973 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		6664E695146A4091D04C24D2797DF3E9 /* Frameworks */ = {
+		E46C88A8BB35102DD9353BE150C7A0C6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B829DA389CB063D00DC4FC04FFAE3418 /* Combine.framework in Frameworks */,
-				85ECACBE94CE3AFE0C5F7F70164A4EA4 /* Foundation.framework in Frameworks */,
+				1AB88FE24A171BAFA779B691EAFB6BA3 /* Combine.framework in Frameworks */,
+				AD0CA7B597326C1F4A9FFC919EA9C39C /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +169,15 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
+		7CC578882D424F719FBE19D00FDE1FDC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F1B8738E5AF68B43CE2044E35F9A9CDF /* Pods_ChatApp.framework */,
+				958807FE7BE049D5CC3FFD87A9E0CAAE /* TFSChatTransport.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9116D45E74E9E49881894B55A995D7FA /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -207,36 +216,27 @@
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
 				1628BF05B4CAFDCC3549A101F5A10A17 /* Frameworks */,
 				9116D45E74E9E49881894B55A995D7FA /* Pods */,
-				D6A6575278D64B607C82E832B017352B /* Products */,
+				7CC578882D424F719FBE19D00FDE1FDC /* Products */,
 				64EC178325B076CFE489E2F91650B4B9 /* Targets Support Files */,
 			);
-			sourceTree = "<group>";
-		};
-		D6A6575278D64B607C82E832B017352B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F1B8738E5AF68B43CE2044E35F9A9CDF /* Pods-ChatApp */,
-				958807FE7BE049D5CC3FFD87A9E0CAAE /* TFSChatTransport */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		389F3F7CE7F49987543647972B24A17D /* Headers */ = {
+		6CF8F496AA26CFF8FA340CBDA4649E7A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9FE44A4405279F0809FA3780F4A7A3C2 /* TFSChatTransport-umbrella.h in Headers */,
+				44FC50E064EA632C20679288F13F7CB6 /* Pods-ChatApp-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FCAE2321AF6CF200F32640032D4A9AA7 /* Headers */ = {
+		9B8979600317F7FEC1352F556D86740A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B68CD708458C2CE9E73772FD6C372F1 /* Pods-ChatApp-umbrella.h in Headers */,
+				2BF0BF715085D9BB020D251EAF6B2590 /* TFSChatTransport-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,32 +245,32 @@
 /* Begin PBXNativeTarget section */
 		3E56AAC0A8B8C5BC2C6E42C547BDBFFE /* Pods-ChatApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CAA2FE73A417EA20F4D8A57C9310BA57 /* Build configuration list for PBXNativeTarget "Pods-ChatApp" */;
+			buildConfigurationList = FC8BB53E887AE29E8B4457F09049CD6B /* Build configuration list for PBXNativeTarget "Pods-ChatApp" */;
 			buildPhases = (
-				FCAE2321AF6CF200F32640032D4A9AA7 /* Headers */,
-				36F33BCBB86C5FC6283EDAA67F14AD06 /* Sources */,
-				5B06151C6DCE88FEFFEFC8D5EFAF2B51 /* Frameworks */,
-				EA8C21F17485EA7BA78807D0A37F9340 /* Resources */,
+				6CF8F496AA26CFF8FA340CBDA4649E7A /* Headers */,
+				6B067BD79591C17BE18D810A85CFF613 /* Sources */,
+				5D2A5EC827D240137FE9C52CFC82F2A3 /* Frameworks */,
+				2BFFEA0A0B7BB0B68626374060DC0F58 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				25C1F1CEA1D8EA6674B19615C021F6A8 /* PBXTargetDependency */,
-				2EEA5BC38F861AB0A69724FB7154D121 /* PBXTargetDependency */,
+				D4F8E33FD18B023170CAF82A7C08C32B /* PBXTargetDependency */,
+				7C8A26239DE2D84D9031E7D99837A034 /* PBXTargetDependency */,
 			);
 			name = "Pods-ChatApp";
-			productName = Pods_ChatApp;
-			productReference = F1B8738E5AF68B43CE2044E35F9A9CDF /* Pods-ChatApp */;
+			productName = "Pods-ChatApp";
+			productReference = F1B8738E5AF68B43CE2044E35F9A9CDF /* Pods_ChatApp.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		C90E583443D3C8FC2FC19D2AE26CFA55 /* TFSChatTransport */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BDA7A2831CF2A5925F8D18C274E6B7FD /* Build configuration list for PBXNativeTarget "TFSChatTransport" */;
+			buildConfigurationList = 576377A19CEDD240DE3B00F21AB2CDCE /* Build configuration list for PBXNativeTarget "TFSChatTransport" */;
 			buildPhases = (
-				389F3F7CE7F49987543647972B24A17D /* Headers */,
-				BCC5AAC5FBFE39B7AC8AA97F43686E10 /* Sources */,
-				6664E695146A4091D04C24D2797DF3E9 /* Frameworks */,
-				9C8273CE8EA330BD6B8689AB208F7AF2 /* Resources */,
+				9B8979600317F7FEC1352F556D86740A /* Headers */,
+				156AF7C8DCF40FC52759A0B20C619169 /* Sources */,
+				E46C88A8BB35102DD9353BE150C7A0C6 /* Frameworks */,
+				1B8DC40EB859F5E0DF9F7C0EFF92FA5A /* Resources */,
 			);
 			buildRules = (
 			);
@@ -278,7 +278,7 @@
 			);
 			name = TFSChatTransport;
 			productName = TFSChatTransport;
-			productReference = 958807FE7BE049D5CC3FFD87A9E0CAAE /* TFSChatTransport */;
+			productReference = 958807FE7BE049D5CC3FFD87A9E0CAAE /* TFSChatTransport.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -295,11 +295,11 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				Base,
 				en,
+				Base,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
-			productRefGroup = D6A6575278D64B607C82E832B017352B /* Products */;
+			productRefGroup = 7CC578882D424F719FBE19D00FDE1FDC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -311,14 +311,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		9C8273CE8EA330BD6B8689AB208F7AF2 /* Resources */ = {
+		1B8DC40EB859F5E0DF9F7C0EFF92FA5A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EA8C21F17485EA7BA78807D0A37F9340 /* Resources */ = {
+		2BFFEA0A0B7BB0B68626374060DC0F58 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -328,46 +328,81 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		36F33BCBB86C5FC6283EDAA67F14AD06 /* Sources */ = {
+		156AF7C8DCF40FC52759A0B20C619169 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36FC1E502190F1D0D983640D1517DA9B /* Pods-ChatApp-dummy.m in Sources */,
+				9A7C4A39A062123A1764323C6616B931 /* Channel.swift in Sources */,
+				5614E1B2A23E8894DED475D9CFAC6F79 /* ChatEvent.swift in Sources */,
+				95722733B444271F5217E673BEC4649A /* ChatService.swift in Sources */,
+				8E4008D548A79086811B37079186D2F3 /* Message.swift in Sources */,
+				CE50D8CF031B10FFAC805407721A977B /* SSEService.swift in Sources */,
+				EA8E38183A395E905215CA5DF27E47A6 /* TFSChatTransport-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BCC5AAC5FBFE39B7AC8AA97F43686E10 /* Sources */ = {
+		6B067BD79591C17BE18D810A85CFF613 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0CD9026FF63B50DD479E3474FF7D275 /* Channel.swift in Sources */,
-				7DD85D7E261D4EE2BD35F0E95CD036D8 /* ChatEvent.swift in Sources */,
-				DD30CB1FAB62D9E3B62CF9BA68B5212B /* ChatService.swift in Sources */,
-				929BFA810DF9841213248541E75F0703 /* Message.swift in Sources */,
-				A66E0CC850411D2B43FF52C43FD4C69D /* SSEService.swift in Sources */,
-				B2FBEABE9167EDFD952B0895CF3D2DA5 /* TFSChatTransport-dummy.m in Sources */,
+				37FDE1644A3D62C57C6591C84AD6B26B /* Pods-ChatApp-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		25C1F1CEA1D8EA6674B19615C021F6A8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = SwiftLint;
-			target = 52B60EC2A583F24ACBB69C113F5488B9 /* SwiftLint */;
-			targetProxy = FD2D8D2592BD37C11533A585FB9312C7 /* PBXContainerItemProxy */;
-		};
-		2EEA5BC38F861AB0A69724FB7154D121 /* PBXTargetDependency */ = {
+		7C8A26239DE2D84D9031E7D99837A034 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TFSChatTransport;
 			target = C90E583443D3C8FC2FC19D2AE26CFA55 /* TFSChatTransport */;
-			targetProxy = 86965473FE06BD09E302B110919B2B0D /* PBXContainerItemProxy */;
+			targetProxy = 5FF9B1700F1D14B7DB74A7E4FC280FE3 /* PBXContainerItemProxy */;
+		};
+		D4F8E33FD18B023170CAF82A7C08C32B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftLint;
+			target = 52B60EC2A583F24ACBB69C113F5488B9 /* SwiftLint */;
+			targetProxy = F60670B8D889F00114B16764DE18E334 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		292C9708D3F08AD602F716EF619E1D32 /* Debug */ = {
+		03C1D21C15D8C2226F3F985E42650FD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FCCE5074585997375B4109D603B6DB54 /* TFSChatTransport.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/TFSChatTransport/TFSChatTransport-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/TFSChatTransport/TFSChatTransport-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MODULEMAP_FILE = "Target Support Files/TFSChatTransport/TFSChatTransport.modulemap";
+				PRODUCT_MODULE_NAME = TFSChatTransport;
+				PRODUCT_NAME = TFSChatTransport;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		09284709534176E1E492926C54E19366 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F495233B677AA4BB090B8C4290C85F09 /* Pods-ChatApp.debug.xcconfig */;
 			buildSettings = {
@@ -403,6 +438,44 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
+		};
+		1C25EF09BC9B5BFF310EAC7FCB6C49B1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 699CF49FFF827420483397C564092F3D /* Pods-ChatApp.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-ChatApp/Pods-ChatApp-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-ChatApp/Pods-ChatApp.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
 		};
 		4BC7450F9457737EE3E637BA155B56F7 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -470,77 +543,6 @@
 			};
 			name = Debug;
 		};
-		5049989FA745036EC068B08E0A876EA0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = FCCE5074585997375B4109D603B6DB54 /* TFSChatTransport.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/TFSChatTransport/TFSChatTransport-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/TFSChatTransport/TFSChatTransport-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MODULEMAP_FILE = "Target Support Files/TFSChatTransport/TFSChatTransport.modulemap";
-				PRODUCT_MODULE_NAME = TFSChatTransport;
-				PRODUCT_NAME = TFSChatTransport;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		5BF04907A9724A51D0D87A1D1567534D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3EC7C9732934DEB0D584BC89FCEE8EFA /* TFSChatTransport.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/TFSChatTransport/TFSChatTransport-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/TFSChatTransport/TFSChatTransport-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MODULEMAP_FILE = "Target Support Files/TFSChatTransport/TFSChatTransport.modulemap";
-				PRODUCT_MODULE_NAME = TFSChatTransport;
-				PRODUCT_NAME = TFSChatTransport;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 		8B5A46FF8D3C1289CDEE3BAFACABCD2A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -603,44 +605,6 @@
 			};
 			name = Release;
 		};
-		9198D425ABDD91A505BAD5A18DD9DEDD /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 699CF49FFF827420483397C564092F3D /* Pods-ChatApp.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-ChatApp/Pods-ChatApp-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-ChatApp/Pods-ChatApp.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 		AD81E62ACCB0B7A923FC8AA288F9921E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B3B507A9118257EFC830D0E712F7C866 /* SwiftLint.release.xcconfig */;
@@ -655,6 +619,42 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C28DB2109E7F38F6F194B10990FF7583 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3EC7C9732934DEB0D584BC89FCEE8EFA /* TFSChatTransport.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/TFSChatTransport/TFSChatTransport-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/TFSChatTransport/TFSChatTransport-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MODULEMAP_FILE = "Target Support Files/TFSChatTransport/TFSChatTransport.modulemap";
+				PRODUCT_MODULE_NAME = TFSChatTransport;
+				PRODUCT_NAME = TFSChatTransport;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -686,6 +686,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		576377A19CEDD240DE3B00F21AB2CDCE /* Build configuration list for PBXNativeTarget "TFSChatTransport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03C1D21C15D8C2226F3F985E42650FD1 /* Debug */,
+				C28DB2109E7F38F6F194B10990FF7583 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AE7B4FB01588B9E6DF09CB79FC7CE7BD /* Build configuration list for PBXAggregateTarget "SwiftLint" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -695,20 +704,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BDA7A2831CF2A5925F8D18C274E6B7FD /* Build configuration list for PBXNativeTarget "TFSChatTransport" */ = {
+		FC8BB53E887AE29E8B4457F09049CD6B /* Build configuration list for PBXNativeTarget "Pods-ChatApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5049989FA745036EC068B08E0A876EA0 /* Debug */,
-				5BF04907A9724A51D0D87A1D1567534D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CAA2FE73A417EA20F4D8A57C9310BA57 /* Build configuration list for PBXNativeTarget "Pods-ChatApp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				292C9708D3F08AD602F716EF619E1D32 /* Debug */,
-				9198D425ABDD91A505BAD5A18DD9DEDD /* Release */,
+				09284709534176E1E492926C54E19366 /* Debug */,
+				1C25EF09BC9B5BFF310EAC7FCB6C49B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

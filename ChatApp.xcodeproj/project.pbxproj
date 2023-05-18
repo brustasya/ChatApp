@@ -67,6 +67,8 @@
 		855940B12A0BD8FA0065A30E /* ImageServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855940B02A0BD8FA0065A30E /* ImageServiceTests.swift */; };
 		855940BE2A0BD9200065A30E /* ProfileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855940BD2A0BD9200065A30E /* ProfileUITests.swift */; };
 		855940CB2A0C06E80065A30E /* MockNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855940CA2A0C06E80065A30E /* MockNetworkService.swift */; };
+		855940DA2A158DE30065A30E /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 855940D92A158DB50065A30E /* Debug.xcconfig */; };
+		855940DC2A158EDD0065A30E /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 855940DB2A158EDB0065A30E /* Release.xcconfig */; };
 		859F3FB029E4422700466172 /* Chat.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 859F3FAE29E4422700466172 /* Chat.xcdatamodeld */; };
 		859F3FB229E44CA700466172 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859F3FB129E44CA700466172 /* CoreDataService.swift */; };
 		859F3FB429E44E7300466172 /* ChatDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859F3FB329E44E7300466172 /* ChatDataSource.swift */; };
@@ -175,6 +177,9 @@
 		855940BD2A0BD9200065A30E /* ProfileUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileUITests.swift; sourceTree = "<group>"; };
 		855940C62A0BDA6C0065A30E /* ChatApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChatApp.xctestplan; sourceTree = "<group>"; };
 		855940CA2A0C06E80065A30E /* MockNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkService.swift; sourceTree = "<group>"; };
+		855940CF2A1580AB0065A30E /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		855940D92A158DB50065A30E /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		855940DB2A158EDB0065A30E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		859F3FAF29E4422700466172 /* Chat.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Chat.xcdatamodel; sourceTree = "<group>"; };
 		859F3FB129E44CA700466172 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		859F3FB329E44E7300466172 /* ChatDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataSource.swift; sourceTree = "<group>"; };
@@ -702,6 +707,9 @@
 		85A1E7B929A687BA004AD1F4 = {
 			isa = PBXGroup;
 			children = (
+				855940DB2A158EDB0065A30E /* Release.xcconfig */,
+				855940D92A158DB50065A30E /* Debug.xcconfig */,
+				855940CF2A1580AB0065A30E /* Config.xcconfig */,
 				855940C62A0BDA6C0065A30E /* ChatApp.xctestplan */,
 				85A1E7C429A687BA004AD1F4 /* ChatApp */,
 				855940AF2A0BD8FA0065A30E /* ChatAppTests */,
@@ -910,8 +918,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				855940DC2A158EDD0065A30E /* Release.xcconfig in Resources */,
 				85A1E7D229A687BD004AD1F4 /* LaunchScreen.storyboard in Resources */,
 				85A1E7CF29A687BD004AD1F4 /* Assets.xcassets in Resources */,
+				855940DA2A158DE30065A30E /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1300,6 +1310,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HLV8HT4WV9;
 				GENERATE_INFOPLIST_FILE = YES;
+				HOST = "";
 				INFOPLIST_FILE = ChatApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -1311,6 +1322,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				PORT = "";
 				PRODUCT_BUNDLE_IDENTIFIER = ru.tinkoff.ChatApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

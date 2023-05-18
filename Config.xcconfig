@@ -1,0 +1,15 @@
+//
+//  Config.xcconfig
+//  ChatApp
+//
+//  Created by Станислава on 18.05.2023.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+HOST = 167.235.86.234
+PORT = "8080"
+
+API_KEY = "35802088-0d943bda2487c26e70bf21274"
+BASE_URL = "https://pixabay.com/api/"

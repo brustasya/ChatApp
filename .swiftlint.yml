@@ -3,6 +3,7 @@ excluded:
   - UnitTests
   - UITests
   - DerivedData
+  - vendor
 
 warning_threshold: 1
 

@@ -10,10 +10,10 @@ import TFSChatTransport
 
 final class ServiceAssembly {
     
-    private let host = "167.235.86.234"
-    private let port = 8080
-    private let apiKey = "35802088-0d943bda2487c26e70bf21274"
-    private let baseURLString = "https://pixabay.com/api/"
+    private let host = Bundle.main.object(forInfoDictionaryKey: "Host") as? String ?? ""
+    private let port = Int(Bundle.main.object(forInfoDictionaryKey: "Port") as? String ?? "") ?? 0
+    private let apiKey = Bundle.main.object(forInfoDictionaryKey: "ApiKey") as? String ?? ""
+    private let baseURLString = Bundle.main.object(forInfoDictionaryKey: "BaseURL") as? String ?? ""
     private let perPage = 150
     
     func makeChatDataService() -> ChatDataSourceProtocol {
@@ -21,7 +21,8 @@ final class ServiceAssembly {
     }
     
     func makeChatService() -> ChatService {
-        ChatService(host: host, port: port)
+        print("1: \(host)")
+        return ChatService(host: host, port: port)
     }
     
     func makeProfileService() -> UserProfileDataServiceProtocol {

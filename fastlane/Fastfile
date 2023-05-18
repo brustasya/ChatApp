@@ -1,0 +1,46 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+desc "Custom build for testing"
+  lane :custom_build_for_testing do |options|
+    cocoapods(
+      clean_install: true,
+      podfile: "Podfile"
+    )
+    swiftlint(
+      executable: "Pods/SwiftLint/swiftlint",
+      mode: :lint,
+      config_file: ".swiftlint.yml",
+      raise_if_swiftlint_error: true,
+      ignore_exit_status: true
+    )
+    scan(clean: true)
+  end
+
+desc "Custom run tests"
+  lane :custom_run_tests do |options|
+    scan(
+      test_without_building: true,
+      testplan: "ChatApp"
+    )
+  end
+
+desc "Custom build and test"
+  lane :custom_build_and_test do |options|
+    custom_build_for_testing
+    custom_run_tests
+  end
