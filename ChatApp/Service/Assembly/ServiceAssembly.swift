@@ -10,7 +10,7 @@ import TFSChatTransport
 
 final class ServiceAssembly {
     
-    private let host = Bundle.main.object(forInfoDictionaryKey: "Host") as? String ?? ""
+    private let host: String = Bundle.main.object(forInfoDictionaryKey: "Host") as? String ?? ""
     private let port = Int(Bundle.main.object(forInfoDictionaryKey: "Port") as? String ?? "") ?? 0
     private let apiKey = Bundle.main.object(forInfoDictionaryKey: "ApiKey") as? String ?? ""
     private let baseURLString = Bundle.main.object(forInfoDictionaryKey: "BaseURL") as? String ?? ""

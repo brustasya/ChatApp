@@ -1,9 +1,7 @@
-excluded:
-  - Pods
-  - UnitTests
-  - UITests
-  - DerivedData
-  - vendor
+
+
+included: 
+  - ChatApp
 
 warning_threshold: 1
 

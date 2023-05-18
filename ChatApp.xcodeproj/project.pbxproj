@@ -67,8 +67,6 @@
 		855940B12A0BD8FA0065A30E /* ImageServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855940B02A0BD8FA0065A30E /* ImageServiceTests.swift */; };
 		855940BE2A0BD9200065A30E /* ProfileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855940BD2A0BD9200065A30E /* ProfileUITests.swift */; };
 		855940CB2A0C06E80065A30E /* MockNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855940CA2A0C06E80065A30E /* MockNetworkService.swift */; };
-		855940DA2A158DE30065A30E /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 855940D92A158DB50065A30E /* Debug.xcconfig */; };
-		855940DC2A158EDD0065A30E /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 855940DB2A158EDB0065A30E /* Release.xcconfig */; };
 		859F3FB029E4422700466172 /* Chat.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 859F3FAE29E4422700466172 /* Chat.xcdatamodeld */; };
 		859F3FB229E44CA700466172 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859F3FB129E44CA700466172 /* CoreDataService.swift */; };
 		859F3FB429E44E7300466172 /* ChatDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859F3FB329E44E7300466172 /* ChatDataSource.swift */; };
@@ -180,6 +178,7 @@
 		855940CF2A1580AB0065A30E /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		855940D92A158DB50065A30E /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		855940DB2A158EDB0065A30E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		855940DD2A1664480065A30E /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		859F3FAF29E4422700466172 /* Chat.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Chat.xcdatamodel; sourceTree = "<group>"; };
 		859F3FB129E44CA700466172 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		859F3FB329E44E7300466172 /* ChatDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataSource.swift; sourceTree = "<group>"; };
@@ -710,6 +709,7 @@
 				855940DB2A158EDB0065A30E /* Release.xcconfig */,
 				855940D92A158DB50065A30E /* Debug.xcconfig */,
 				855940CF2A1580AB0065A30E /* Config.xcconfig */,
+				855940DD2A1664480065A30E /* Secrets.xcconfig */,
 				855940C62A0BDA6C0065A30E /* ChatApp.xctestplan */,
 				85A1E7C429A687BA004AD1F4 /* ChatApp */,
 				855940AF2A0BD8FA0065A30E /* ChatAppTests */,
@@ -918,10 +918,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				855940DC2A158EDD0065A30E /* Release.xcconfig in Resources */,
 				85A1E7D229A687BD004AD1F4 /* LaunchScreen.storyboard in Resources */,
 				85A1E7CF29A687BD004AD1F4 /* Assets.xcassets in Resources */,
-				855940DA2A158DE30065A30E /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -983,7 +981,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/Swiftlint/swiftlint\" \"${SRCROOT}/ChatApp\"\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# \"${PODS_ROOT}/Swiftlint/swiftlint\" \"${SRCROOT}/ChatApp\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1236,7 +1234,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1290,7 +1288,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -1302,7 +1300,7 @@
 		};
 		85A1E7D729A687BD004AD1F4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7168F416F897AFBB3BD2E288 /* Pods-ChatApp.debug.xcconfig */;
+			baseConfigurationReference = 855940D92A158DB50065A30E /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1336,7 +1334,7 @@
 		};
 		85A1E7D829A687BD004AD1F4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 175FEF3CAB6F54FC245259A3 /* Pods-ChatApp.release.xcconfig */;
+			baseConfigurationReference = 855940DB2A158EDB0065A30E /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
